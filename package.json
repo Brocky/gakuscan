@@ -1,0 +1,25 @@
+{
+  "name": "gakuscan",
+  "version": "0.1.0",
+  "description": "An immersive Japanese learning tool that uses OCR to highlight grammar and assist learners in understanding Japanese text from games, manga, and other digital media.",
+  "main": "index.js",
+  "scripts": {
+    "serve": "npx http-server",
+    "sserve": "npx http-server -S",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "keywords": [
+    "Japanese",
+    "OCR",
+    "Learning",
+    "Grammar",
+    "Immersion",
+    "Language",
+    "Kuromoji"
+  ],
+  "author": "Heiko Brockmann",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "@sglkc/kuromoji": "^1.0.0"
+  }
+}
