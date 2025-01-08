@@ -17,9 +17,13 @@
     "Language",
     "Kuromoji"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Brocky/gakuscan.git"
+  },
   "author": "Heiko Brockmann",
   "license": "GPL-3.0-only",
   "dependencies": {
-    "@sglkc/kuromoji": "^1.0.0"
+    "@sglkc/kuromoji": "^1.1.0"
   }
 }
