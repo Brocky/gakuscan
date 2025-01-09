@@ -1,19 +1,25 @@
 (function () {
     const $entryTemplate = document.createElement('template');
     $entryTemplate.innerHTML = `
-    <div class="gakuscan-entry" data-highlight>
+    <section class="gakuscan-entry" data-highlight>
         <span class="gakuscan-entry-time"></span>
-        <span class="gakuscan-entry-text"></span>
-        <div class="gakuscan-entry-img"></div>
-        <div class="gakuscan-entry-tools">
+        <div class="gakuscan-entry-wrapper">
+            <p class="gakuscan-entry-text"></p>
+            <figure class="gakuscan-entry-img"></figure>
+        </div>
+        <menu class="gakuscan-entry-tools">
             <button class="gakuscan-entry-edit"><gakuscan-icon icon="edit" /></button>
             <button class="gakuscan-entry-delete"><gakuscan-icon icon="trash" /></button>
-        </div>
-    </div>
+        </menu>
+    </section>
     `;
     const $logTemplate = document.createElement('template');
     $logTemplate.innerHTML = `
     <style>
+        p {
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
         .gakuscan-hidden {
             display: none;
         }
@@ -65,17 +71,35 @@
             position: relative;
             height: fit-content;
             width: fit-content;
-            margin: auto;
+            margin: .5rem auto;
+        }
+        .gakuscan-entry-wrapper {
+            display: flex;
+            flex-direction: column;
         }
         .gakuscan-entry-img > img {
             max-height: 20rem;
-            max-width: 20rem;
+            max-width: 100%;
         }
         .gakuscan-entry-img div.gakuscan-entry-anno {
             border: 1px solid;
             position: absolute;
         }
-
+        @media (orientation: portrait) {
+            .gakuscan-entry-wrapper {
+                display: flex;
+                flex-direction: row-reverse;
+            }
+            .gakuscan-entry-img {
+                position: relative;
+                height: fit-content;
+                width: fit-content;
+                margin-right: .5rem;
+            }
+            .gakuscan-entry-img > img {
+                max-width: 20rem;
+            }
+        }
 
         .gakuscan-noun {
             --highlight-color: #007ACC;
@@ -298,14 +322,14 @@
                 this.deleteEntry(id);
             });
             $entryEditBtn.addEventListener('click', () => {
-                this.editEntry(entry, $entry, $entryText, $entryEditBtn);
+                this.editEntry(entry, $entryText, $entryEditBtn);
             });
 
             // append the text to the top of the log
             this.$list.insertBefore($entryTmp, this.$list.firstChild);
         }
 
-        editEntry(entry, $entryContainer, $textContainer, $editButton) {
+        editEntry(entry, $textContainer, $editButton) {
             // create elements for editing an entry
             const $editorWrapper = document.createElement('div'); 
             const $editor        = document.createElement('textarea');
@@ -344,7 +368,7 @@
 
             // add editor to DOM
             $editorWrapper.append($editor);
-            $entryContainer.insertBefore($editorWrapper, $textContainer);
+            $textContainer.parentElement.insertBefore($editorWrapper, $textContainer);
             $editor.focus();
         }
 

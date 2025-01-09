@@ -1,5 +1,6 @@
 # GakuScan(学スキャン)
 ![GakuScan Logo](assets/logo-simplyfied.svg)
+
 Immersion is one of the most effective ways to learn a language. GakuScan empowers you to dive into authentic Japanese content without getting overwhelmed. By providing instant support for text recognition and grammar, it helps you focus on enjoying the material while steadily building your skills.
 
 Perfect for gamers, manga enthusiasts, and anyone exploring the Japanese language, GakuScan turns your favorite activities into opportunities to learn and grow.
