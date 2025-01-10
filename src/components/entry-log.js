@@ -115,6 +115,9 @@
         .gs-adjective {
             --highlight-color: #FFA500;
         }
+        .gs-adnominal-adjective {
+            --highlight-color: #7CFC00;
+        }
         .gs-particle {
             --highlight-color: #228B22;
         }
@@ -146,24 +149,42 @@
     const detailTranslation = {
         名詞: 'noun',
         代名詞: 'pronoun',
-        一般: 'general',
+        固有名詞: 'proper noun',
+        人名: 'personal name',
+        接尾: 'suffix',
+        サ変接続: 'suru-verb',
+        接頭詞: 'prefix',
+
+        連体化: 'bound to noun',
         動詞: 'verb',
         接続詞: 'conjunction',
+
+        一般: 'general',
         自立: 'independent',
         非自立: 'dependent',
         基本形: 'basic form',
+
         助詞: 'particle',
+        係助詞: 'binding particle',
         格助詞: 'case-marking particle',
+        終助詞: 'sentence ending',
+        接続助詞: 'conjunction particle',
+
         連用形: 'continuative form',
         助動詞: 'auxiliary verb',
         連語: 'compound word',
         記号: 'sign',
+        句点: 'period',
+        読点: 'comma',
+        括弧開: 'opening bracket',
+        括弧閉: 'closing bracket',
+
         形容詞: 'adjective',
-        終助詞: 'sentence ending',
+        連体詞: 'adnominal adjective',
         感動詞: 'interjection',
         副詞: 'adverb',
         助詞類接続: 'particle-like',
-        フィラー: 'Filler'
+        フィラー: 'filler',
     }
 
     class EntryLog extends HTMLElement {

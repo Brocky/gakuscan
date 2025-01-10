@@ -33,9 +33,7 @@
         }
         connectedCallback() {
             const icon   = this.getAttribute('icon');
-            const submit = this.getAttribute('submit')
-
-            console.log(submit);
+            const submit = this.getAttribute('submit');
 
             if (icon) {
                 const $icon = document.createElement('gs-icon');
