@@ -1,88 +1,34 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <link rel="icon" href="./favicon.ico" />
-        <!--<link rel="manifest" href="manifest.json" crossorigin="use-credentials" />-->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="GakuScan - An intuitive app for text extraction and analysis from shared media.">
+        <meta name="author" content="Heiko Brockmann">
+        <meta name="keywords" content="OCR, text extraction, GakuScan, Japanese, learning">
         <title>[学] GakuScan</title>
+        
+        <link rel="icon" href="./favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" type="text/css" href="./style/main.css">
+        <!--<link rel="manifest" href="manifest.json" crossorigin="use-credentials">-->
 
-
-        <script src="./components/icon.js"></script>
-        <script src="./components/capture-ctrl.js"></script>
-        <script src="./components/entry-log.js"></script>
-        <script src="./components/settings.js"></script>
+        <script src="./src/components/icon.js"></script>
+        <script src="./src/components/capture-ctrl.js"></script>
+        <script src="./src/components/entry-log.js"></script>
+        <script src="./src/components/settings.js"></script>
+        <script src="./src/components/about.js"></script>
         <script src="./node_modules/@sglkc/kuromoji/build/kuromoji.js"></script>
-        <style>
-            :root {
-                --bg-gradient: linear-gradient(135deg, #ffffff, #f0f0f0);
-                --text-color: #383838;
-                --border-style: .1rem solid color-mix(in srgb, var(--text-color) 8%, transparent);
-                --box-shadow: color-mix(in srgb, var(--text-color) 8%, transparent) 0px 20px 25px -5px, color-mix(in srgb, var(--text-color) 2%, transparent) 0px 10px 10px -5px;
-            }
-            [data-theme="dark"] {
-                --bg-gradient: linear-gradient(135deg, #1e0036, #000428);
-                --text-color: #e0e0e0;
-            }
-            html, body {
-                font-family:'Roboto','Hiragino Sans','Meiryo','Hiragino Kaku Gothic ProN',sans-serif;
-                margin: 0;
-                height: 100vh;
-            }
-            body {
-                background: var(--bg-gradient);
-                color: var(--text-color);
-                transition: background-color 0.3s, color 0.3s;
-                display: flex;
-                flex-direction: column;
-            }
-            button {
-                cursor: pointer;
-            }
+        <script type="module" src="./src/main.js"></script>
 
-            main {
-                display: flex;
-                flex-direction: row;
-                flex-grow: 1;
-                min-height: 40rem;
-            }
-            footer {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                padding: .4rem;
-                max-width: 98vw;
-            }
-            #gakuscan-capture {
-                flex-grow: 1;
-                box-sizing: border-box;
-                height: 100%;
-                width: 100%;
-                margin: auto;
-                padding: 1rem;
-                display: flex;
-                align-items: center;
-            }
-            .gakuscan-hidden {
-                display: none;
-            }
-            #gakuscan-log {
-                max-width: 30rem;
-                padding: .5rem;
-                flex-basis: 30%;
-                overflow-y: scroll;
-            }
-            @media (orientation: portrait) {
-                main {
-                    flex-direction: column;
-                }
-                #gakuscan-log {
-                    max-width: none;
-                    flex-basis: 45%;
-                }
-            }
-
-        </style>
     </head>
     <body>
+        <header>
+            <img class="gakuscan-logo" src="assets/logo-simplyfied.svg">
+            <menu>
+                <li><button id="gs-settings-btn">Settings</button></li>
+                <li><button id="gs-about-btn">About</button></li>
+            </menu>
+        </header>
         <main>
             <section id="gakuscan-capture">
                 <gakuscan-capture-ctrl></gakuscan-capture-ctrl>
@@ -91,50 +37,11 @@
                 <gakuscan-entry-log></gakuscan-entry-log>
             </section>
         </main>
-        <footer>
-            <button id="gakuscan-settings">Settings</button>
+        <!-- <footer>
             <span>
-                Vectors and icons by <a href="https://github.com/instructure/instructure-ui?ref=svgrepo.com" target="_blank">Instructure Ui</a> in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
             </span>
-        </footer>
-        <gakuscan-settings></gakuscan-settings>
+        </footer> -->
+        <gs-settings></gs-settings>
+        <gs-about></gs-about>
     </body>
-    <script type="module">
-        import {getScanner} from './modules/gvision-scanner.js';
-        
-        // Initiales Laden des Themes
-        const userPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const savedTheme      = localStorage.getItem('theme') || (userPrefersDark ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
-        document.addEventListener("DOMContentLoaded", async () => {
-            const $settings = document.querySelector('gakuscan-settings');
-
-            $settings.addEventListener('gakuscan-settings-applied', (e) => {
-                document.documentElement.setAttribute('data-theme', e.detail.theme);
-            });
-            document.getElementById('gakuscan-settings').addEventListener('click', () => {
-                $settings.open();
-            });
-
-            // prepare OCR scanner
-            let gcloud_key = localStorage.getItem('gcloud-vision-key');
-            let scanner    = getScanner(gcloud_key);
-
-            if (!gcloud_key) {
-                //todo lock down application and show hint
-            }
-
-            const $log    = document.querySelector('#gakuscan-log > gakuscan-entry-log');
-
-            document.getElementById('gakuscan-capture').addEventListener('gakuscan-capture-selected', async ({detail}) => {
-                const {selected} = detail;
-                const result = await scanner.scan(selected);
-                $log.addEntry(result);
-            });
-
-            await $log.setKuromoji(kuromoji);
-            $log.renderStoredEntries();
-        });
-    </script>
 </html>
