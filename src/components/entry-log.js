@@ -8,6 +8,7 @@
             <figure class="gakuscan-entry-img"></figure>
         </div>
         <gs-menu class="gakuscan-entry-tools">
+            <li><gs-btn icon="copy" class="gakuscan-entry-copy"></gs-btn></li>
             <li><gs-btn icon="edit" class="gakuscan-entry-edit"></gs-btn></li>
             <li><gs-btn icon="trash" class="gakuscan-entry-delete"></gs-btn></li>
         </gs-menu>
@@ -102,36 +103,39 @@
             }
         }
 
-        .gakuscan-noun {
+        .gs-noun {
             --highlight-color: #007ACC;
         }
-        .gakuscan-pronoun {
+        .gs-pronoun {
             --highlight-color: #1E90FF;
         }
-        .gakuscan-verb {
+        .gs-verb {
             --highlight-color: #FF4500;
         }
-        .gakuscan-particle {
-            --highlight-color: #228B22;
-        }
-        .gakuscan-adjective {
+        .gs-adjective {
             --highlight-color: #FFA500;
         }
-        .gakuscan-adverb {
+        .gs-particle {
+            --highlight-color: #228B22;
+        }
+        .gs-adverb {
             --highlight-color: #FFD700;
         }
-        .gakuscan-auxiliary-verb {
+        .gs-auxiliary-verb {
             --highlight-color: #800080;
         }
-        .gakuscan-interjection {
+        .gs-conjunction {
+            --highlight-color: #40E0D0;
+        }
+        .gs-interjection {
             --highlight-color: #FF69B4;
         }
-        [data-highlight] .gakuscan-analized {
+        [data-highlight] .gs-analized {
             background: color-mix(in srgb, var(--highlight-color) 50%, transparent);
             border: .2rem solid color-mix(in srgb, var(--highlight-color) 20%, transparent);
             background-clip: content-box;
         }
-        .gakuscan-analized:hover {
+        .gs-analized:hover {
             text-decoration: underline;
         }
     </style>
@@ -144,6 +148,7 @@
         代名詞: 'pronoun',
         一般: 'general',
         動詞: 'verb',
+        接続詞: 'conjunction',
         自立: 'independent',
         非自立: 'dependent',
         基本形: 'basic form',
@@ -157,7 +162,8 @@
         終助詞: 'sentence ending',
         感動詞: 'interjection',
         副詞: 'adverb',
-        助詞類接続: 'particle-like'
+        助詞類接続: 'particle-like',
+        フィラー: 'Filler'
     }
 
     class EntryLog extends HTMLElement {
@@ -319,6 +325,11 @@
             }
 
             // add handler for entry tools
+            $entryTmp.querySelector('.gakuscan-entry-copy').addEventListener('click', () => {
+                const text = $entryText.innerText;
+                console.log(text);
+                navigator.clipboard.writeText(text);
+            });
             $entryTmp.querySelector('.gakuscan-entry-delete').addEventListener('click', () => {
                 this.deleteEntry(id);
             });
@@ -398,13 +409,13 @@
                             // try to translate details and add to list
                             if(Object.hasOwn(detailTranslation, detail)) {
                                 details.push(detailTranslation[detail]);
-                                $token.classList.add('gakuscan-' + detailTranslation[detail].replaceAll(' ', '-'));
+                                $token.classList.add('gs-' + detailTranslation[detail].replaceAll(' ', '-'));
                             } else {
                                 details.push(detail);
-                                $token.classList.add('gakuscan-' + detail.replaceAll(' ', '-'));
+                                $token.classList.add('gs-' + detail.replaceAll(' ', '-'));
                             }
                         });
-                        $token.classList.add('gakuscan-analized');
+                        $token.classList.add('gs-analized');
 
                         // build tooltip from details
                         $token.title = details.join(' · ');
