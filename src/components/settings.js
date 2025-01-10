@@ -40,10 +40,10 @@
 
                 <div>
                     <label for="gcloud-vision-key">Google Cloud Vision API:</label>
-                    <input type="text" id="gcloud-vision-key" name="gcloud-vision-key" required>
+                    <input type="password" id="gcloud-vision-key" name="gcloud-vision-key" required>
 
                     <label for="deepl-key">DeepL Translation API:</label>
-                    <input type="text" id="deepl-key" name="deepl-key">
+                    <input type="password" id="deepl-key" name="deepl-key">
                 </div>
             </fieldset>
 
@@ -55,10 +55,10 @@
                 </div>
             </fieldset>
 
-            <menu>
-                <button value="cancel" type="button">Cancel</button>
-                <button value="confirm" type="submit">Save</button>
-            </menu>
+            <gs-menu>
+                <li><gs-btn value="cancel">Cancel</gs-btn></li>
+                <li><gs-btn submit>Save</gs-btn></li>
+            </gs-menu>
         </form>
     </dialog>
     `;
@@ -71,10 +71,10 @@
 
             this.$dialog = this.shadowRoot.querySelector('dialog');
 
-            this.shadowRoot.querySelector('button[value=cancel]').addEventListener('click', () => {
+            this.shadowRoot.querySelector('gs-btn[value=cancel]').addEventListener('click', () => {
                 this.$dialog.close();
             });
-            this.shadowRoot.querySelector('form').addEventListener('submit', (e) => {
+            this.shadowRoot.querySelector('gs-btn[submit]').addEventListener('click', (e) => {
                 e.preventDefault();
 
                 //store api keys

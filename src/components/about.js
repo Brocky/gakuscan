@@ -33,9 +33,9 @@
                 Vectors and icons by <a href="https://github.com/instructure/instructure-ui?ref=svgrepo.com" target="_blank">Instructure Ui</a> in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
                 </p>
             </section>
-            <menu>
-                <button value="close" type="button">Close</button>
-            </menu>
+            <gs-menu>
+                <li><gs-btn value="close">Close</gs-btn></li>
+            </gs-menu>
         </form>
     </dialog>
     `;
@@ -48,7 +48,7 @@
 
             this.$dialog = this.shadowRoot.querySelector('dialog');
 
-            this.shadowRoot.querySelector('button[value=close]').addEventListener('click', () => {
+            this.shadowRoot.querySelector('gs-btn[value=close]').addEventListener('click', () => {
                 this.$dialog.close();
             });
         }

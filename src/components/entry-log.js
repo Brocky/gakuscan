@@ -7,10 +7,10 @@
             <p class="gakuscan-entry-text"></p>
             <figure class="gakuscan-entry-img"></figure>
         </div>
-        <menu class="gakuscan-entry-tools">
-            <button class="gakuscan-entry-edit"><gakuscan-icon icon="edit" /></button>
-            <button class="gakuscan-entry-delete"><gakuscan-icon icon="trash" /></button>
-        </menu>
+        <gs-menu class="gakuscan-entry-tools">
+            <li><gs-btn icon="edit" class="gakuscan-entry-edit"></gs-btn></li>
+            <li><gs-btn icon="trash" class="gakuscan-entry-delete"></gs-btn></li>
+        </gs-menu>
     </section>
     `;
     const $logTemplate = document.createElement('template');

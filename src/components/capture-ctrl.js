@@ -6,15 +6,13 @@ const $template = document.createElement('template');
             width:100%;
             height:100%;
         }
-        button {
-            cursor: pointer;
-        }
         button#gakuscan-capture-start {
+            cursor: pointer;
             width: 100%;
             height: 100%;
             margin: 0;
             padding: 0;
-            color: #c2c2c2;
+            color: color-mix(in srgb, var(--text-color) 22%, transparent);
             border: .5rem dashed currentColor;
             background: none;
             font-size: 20rem;
@@ -41,7 +39,7 @@ const $template = document.createElement('template');
             display: none;
         }
     </style>
-    <button id="gakuscan-capture-start"><gakuscan-icon icon="capture" /></button>
+    <button id="gakuscan-capture-start"><gs-icon icon="capture" /></button>
     <div class="gakuscan-capture-wrapper">
         <video id="gakuscan-capture-vid" class="gakuscan-hidden" autoplay muted></video>
         <canvas id="gakuscan-capture-canvas" class="gakuscan-hidden"></canvas>

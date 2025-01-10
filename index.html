@@ -13,6 +13,8 @@
         <!--<link rel="manifest" href="manifest.json" crossorigin="use-credentials">-->
 
         <script src="./src/components/icon.js"></script>
+        <script src="./src/components/gsbutton.js"></script>
+        <script src="./src/components/action-menu.js"></script>
         <script src="./src/components/capture-ctrl.js"></script>
         <script src="./src/components/entry-log.js"></script>
         <script src="./src/components/settings.js"></script>
@@ -24,10 +26,10 @@
     <body>
         <header>
             <img class="gakuscan-logo" src="assets/logo-simplyfied.svg">
-            <menu>
-                <li><button id="gs-settings-btn">Settings</button></li>
-                <li><button id="gs-about-btn">About</button></li>
-            </menu>
+            <gs-menu>
+                <li><gs-btn button id="gs-settings-btn">Settings</gs-btn></li>
+                <li><gs-btn id="gs-about-btn">About</gs-btn></li>
+            </gs-menu>
         </header>
         <main>
             <section id="gakuscan-capture">

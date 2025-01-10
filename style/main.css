@@ -21,10 +21,6 @@ body {
     display: flex;
     flex-direction: column;
 }
-button {
-    cursor: pointer;
-}
-
 main {
     display: flex;
     flex-direction: row;
@@ -41,14 +37,6 @@ header {
 header .gakuscan-logo {
     width: 4rem;
     margin-right: 2rem;
-}
-menu {
-    all: unset;
-    display: flex;
-}
-menu li {
-    all: unset;
-    margin: .2rem;
 }
 #gakuscan-capture {
     flex-grow: 1;
