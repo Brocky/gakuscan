@@ -11,8 +11,9 @@ Start your immersion journey today with GakuScan—because learning Japanese sho
  - **Real-Time OCR:** Capture Japanese text directly from your screen—be it a game, manga, or website—and convert it instantly.
  - **Grammar Highlights:** Automatically identifies and highlights grammatical structures to help you understand sentence patterns at a glance.
  - **Seamless Integration:** Works with split screens, shared windows, or fullscreen apps, so you never have to interrupt your experience.
+- **Versatile Text Usage**: Use the output with tools like **YomiTan** or copy it to other applications.
 
-## Setup
+## Installation
 Install the dependencies as with any other node application.
 ```bash
 npm install
@@ -23,10 +24,6 @@ npm run serve
 ```
 
 ## How to use
-### First Time Use
-For OCR GakuScan uses google's [Cloud Vision API](https://cloud.google.com/).
-Therefore it is necessary to sign up with google cloud, activate the vision api and get an api-key.
-When you first use GakuScan, go into the `settings` and enter your api-key.
-The key will then be stored in your browser's local storage.
-### Sharing Tabs, Windows or Screens
-By clicking on the area with the large capture icon, the browser will ask you to select a Tab, Window or Screen to share. This might be an online Manga Reader, a japanese website or a Videogame. GakuScan works best when used on a second monitor. Once you slected your target, you need to come back to GakuScan and will see your screen mirrored here. You may now select an area to be scanned.
+To get started with GakuScan, you need to configure the app by entering a **Google Cloud Vision API Key** in the settings. This is required to enable text extraction functionality. If you're new to the app, we recommend reviewing the [Why You Need a Google Cloud Vision API Key](./docs/google-vision.md) guide to understand its importance and how to obtain one. Once set up, refer to the [Usage Guide](./docs/usage.md) for detailed instructions on using GakuScan to capture and extract text effectively.
+
+Thank you for using GakuScan!
