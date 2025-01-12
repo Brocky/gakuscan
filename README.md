@@ -1,3 +1,4 @@
+[![Discord](https://img.shields.io/discord/1327359399811092552?logo=discord&logoColor=%23fff&label=Discord&labelColor=%235865F2)](https://discord.com/invite/mDumA87rph)
 # GakuScan(学スキャン)
 ![GakuScan Logo](assets/logo-simplyfied.svg)
 
@@ -11,7 +12,7 @@ Start your immersion journey today with GakuScan—because learning Japanese sho
  - **Real-Time OCR:** Capture Japanese text directly from your screen—be it a game, manga, or website—and convert it instantly.
  - **Grammar Highlights:** Automatically identifies and highlights grammatical structures to help you understand sentence patterns at a glance.
  - **Seamless Integration:** Works with split screens, shared windows, or fullscreen apps, so you never have to interrupt your experience.
-- **Versatile Text Usage**: Use the output with tools like **YomiTan** or copy it to other applications.
+ - **Versatile Text Usage**: Use the output with tools like **YomiTan** or copy it to other applications.
 
 ## Installation
 Install the dependencies as with any other node application.
