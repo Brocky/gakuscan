@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('gs-settings').open();
     });
     document.getElementById('gs-about-btn').addEventListener('click', () => {
-        document.querySelector('gs-about').open();
+        document.getElementById('gs-about').open();
     });
 
     // prepare OCR scanner
-    let gcloud_key = localStorage.getItem('gcloud-vision-key');
+    let gcloud_key = settings.get('gcloud-vision-key');
     let scanner    = getScanner(gcloud_key);
 
     if (!gcloud_key) {

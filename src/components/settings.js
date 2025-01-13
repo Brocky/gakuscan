@@ -4,14 +4,6 @@ import { getSettingsStore } from "../modules/settings-store.js";
     const $dialogTemplate = document.createElement('template');
     $dialogTemplate.innerHTML = `
     <style>
-        dialog {
-            background: var(--bg-gradient);
-            color: var(--text-color);
-            box-shadow: var(--box-shadow);
-            border: var(--border-style);
-            padding: 2rem;
-            max-width: 30rem;
-        }
         form {
             display: flex;
             flex-direction: column;
@@ -26,16 +18,8 @@ import { getSettingsStore } from "../modules/settings-store.js";
         fieldset input {
             grid-column-start: 2;
         }
-        menu {
-            margin: 0;
-            display: flex;
-            justify-content: flex-end;
-        }
-        button {
-            cursor: pointer;
-        }
     </style>
-    <dialog>
+    <gs-dialog>
         <form method="dialog">
             <fieldset>
                 <legend>API Keys</legend>
@@ -56,13 +40,13 @@ import { getSettingsStore } from "../modules/settings-store.js";
                     <input type="checkbox" id="dark-theme" name="dark-theme">
                 </div>
             </fieldset>
-
-            <gs-menu>
-                <li><gs-btn value="cancel">Cancel</gs-btn></li>
-                <li><gs-btn submit>Save</gs-btn></li>
-            </gs-menu>
         </form>
-    </dialog>
+
+        <gs-menu slot="action-menu">
+            <li><gs-btn value="cancel">Cancel</gs-btn></li>
+            <li><gs-btn submit>Save</gs-btn></li>
+        </gs-menu>
+    </gs-dialog>
     `;
 
     const settings = getSettingsStore();
@@ -73,7 +57,7 @@ import { getSettingsStore } from "../modules/settings-store.js";
             this.attachShadow({ mode: 'open'});
             this.shadowRoot.appendChild($dialogTemplate.content.cloneNode(true));
 
-            this.$dialog = this.shadowRoot.querySelector('dialog');
+            this.$dialog = this.shadowRoot.querySelector('gs-dialog');
 
             this.shadowRoot.querySelector('gs-btn[value=cancel]').addEventListener('click', () => {
                 this.$dialog.close();
@@ -109,7 +93,7 @@ import { getSettingsStore } from "../modules/settings-store.js";
             this.shadowRoot.querySelector('[id="deepl-key"]').value         = settings.get('deepl-key');
             this.shadowRoot.querySelector('[id="dark-theme"]').checked      = (settings.get('theme') == 'dark');
 
-            this.$dialog.showModal();
+            this.$dialog.open();
         }
     }
 

@@ -18,7 +18,7 @@
         <script src="./src/components/capture-ctrl.js"></script>
         <script src="./src/components/entry-log.js"></script>
         <script type="module" src="./src/components/settings.js"></script>
-        <script src="./src/components/about.js"></script>
+        <script src="./src/components/dialog.js"></script>
         <script src="./node_modules/@sglkc/kuromoji/build/kuromoji.js"></script>
         <script type="module" src="./src/main.js"></script>
 
@@ -39,11 +39,19 @@
                 <gakuscan-entry-log></gakuscan-entry-log>
             </section>
         </main>
-        <!-- <footer>
-            <span>
-            </span>
-        </footer> -->
         <gs-settings></gs-settings>
-        <gs-about></gs-about>
+        <gs-dialog id="gs-about">
+            <section>
+                <p>
+                Immersion is one of the most effective ways to learn a language. GakuScan empowers you to dive into authentic Japanese content without getting overwhelmed. By providing instant support for text recognition and grammar, it helps you focus on enjoying the material while steadily building your skills.
+                </p>
+                <p>
+                View the application code and find help at <a href="https://github.com/Brocky/gakuscan">GitHub</a>
+                </p>
+                <p>
+                Vectors and icons by <a href="https://github.com/instructure/instructure-ui?ref=svgrepo.com" target="_blank">Instructure Ui</a> in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
+                </p>
+            </section>
+        </gs-about>
     </body>
 </html>
