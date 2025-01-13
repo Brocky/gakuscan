@@ -1,3 +1,5 @@
+import { getSettingsStore } from "../modules/settings-store.js";
+
 (function () {
     const $dialogTemplate = document.createElement('template');
     $dialogTemplate.innerHTML = `
@@ -63,6 +65,8 @@
     </dialog>
     `;
 
+    const settings = getSettingsStore();
+
     class Settings extends HTMLElement {
         constructor() {
             super();
@@ -77,14 +81,14 @@
             this.shadowRoot.querySelector('gs-btn[submit]').addEventListener('click', (e) => {
                 e.preventDefault();
 
-                //store api keys
-                const settings = {
+                //store settings
+                const input = {
                     'gcloud-vision-key': this.shadowRoot.querySelector('[id="gcloud-vision-key"]').value,
                     'deepl-key': this.shadowRoot.querySelector('[id="deepl-key"]').value,
                     'theme': this.shadowRoot.querySelector('[id="dark-theme"]').checked ? 'dark' : 'light'
                 };
-                for (const [key, value] of Object.entries(settings)) {
-                    localStorage.setItem(key, value);
+                for (const [key, value] of Object.entries(input)) {
+                    settings.set(key, value);
                 }
 
                 this.$dialog.close();
@@ -94,20 +98,16 @@
                     {
                         bubbles: true,
                         cancelable: true,
-                        detail: settings
+                        detail: input
                     }
                 ));
             });
         }
 
         open() {
-            const gcloud = localStorage.getItem('gcloud-vision-key');
-            const deepl  = localStorage.getItem('deepl-key');
-            const theme  = localStorage.getItem('theme');
-
-            this.shadowRoot.querySelector('[id="gcloud-vision-key"]').value = gcloud;
-            this.shadowRoot.querySelector('[id="deepl-key"]').value = deepl;
-            this.shadowRoot.querySelector('[id="dark-theme"]').checked = (theme == 'dark');
+            this.shadowRoot.querySelector('[id="gcloud-vision-key"]').value = settings.get('gcloud-vision-key');
+            this.shadowRoot.querySelector('[id="deepl-key"]').value         = settings.get('deepl-key');
+            this.shadowRoot.querySelector('[id="dark-theme"]').checked      = (settings.get('theme') == 'dark');
 
             this.$dialog.showModal();
         }

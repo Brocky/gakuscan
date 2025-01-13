@@ -1,18 +1,19 @@
-import {getScanner} from './modules/gvision-scanner.js';
-        
-// Initiales Laden des Themes
+import { getScanner } from './modules/gvision-scanner.js';
+import { getSettingsStore } from './modules/settings-store.js';
+
 const userPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const savedTheme      = localStorage.getItem('theme') || (userPrefersDark ? 'dark' : 'light');
-document.documentElement.setAttribute('data-theme', savedTheme);
+const settings        = getSettingsStore();
+
+// Initiales Laden des Themes
+document.documentElement.setAttribute('data-theme', settings.get('theme') || (userPrefersDark ? 'dark' : 'light'));
+settings.watch('theme', ({newValue}) => {
+    document.documentElement.setAttribute('data-theme', newValue);
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const $settings = document.querySelector('gs-settings');
 
-    $settings.addEventListener('gs-settings-applied', (e) => {
-        document.documentElement.setAttribute('data-theme', e.detail.theme);
-    });
     document.getElementById('gs-settings-btn').addEventListener('click', () => {
-        $settings.open();
+        document.querySelector('gs-settings').open();
     });
     document.getElementById('gs-about-btn').addEventListener('click', () => {
         document.querySelector('gs-about').open();
