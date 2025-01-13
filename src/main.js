@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('gs-about-btn').addEventListener('click', () => {
         document.getElementById('gs-about').open();
     });
+    document.getElementById('gs-imprint-btn').addEventListener('click', () => {
+        document.getElementById('gs-imprint').open();
+    });
+    document.getElementById('gs-privacy-btn').addEventListener('click', () => {
+        document.getElementById('gs-privacy').open();
+    });
 
     // prepare OCR scanner
     let gcloud_key = settings.get('gcloud-vision-key');
