@@ -35,6 +35,8 @@ const detailTranslation = {
     連体詞: 'adnominal adjective',
     感動詞: 'interjection',
     副詞: 'adverb',
+    副詞可能: 'adverbial noun',
+    副助詞: 'adverbial particle',
     助詞類接続: 'particle-like',
     フィラー: 'filler',
 }
