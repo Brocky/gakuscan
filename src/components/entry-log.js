@@ -1,3 +1,6 @@
+import { getEntryRepo } from "../modules/entry-repository.js";
+import { analyzeText } from "../modules/text-analyzer.js";
+
 (function () {
     const $entryTemplate = document.createElement('template');
     $entryTemplate.innerHTML = `
@@ -134,8 +137,8 @@
             --highlight-color: #FF69B4;
         }
         [data-highlight] .gs-analized {
-            background: color-mix(in srgb, var(--highlight-color) 50%, transparent);
-            border: .2rem solid color-mix(in srgb, var(--highlight-color) 20%, transparent);
+            background: color-mix(in srgb, var(--highlight-color, transparent) 50%, transparent);
+            border: .2rem solid color-mix(in srgb, var(--highlight-color, transparent) 20%, transparent);
             background-clip: content-box;
         }
         .gs-analized:hover {
@@ -146,49 +149,7 @@
     </div>
     `;
 
-    const detailTranslation = {
-        名詞: 'noun',
-        代名詞: 'pronoun',
-        固有名詞: 'proper noun',
-        人名: 'personal name',
-        接尾: 'suffix',
-        サ変接続: 'suru-verb',
-        接頭詞: 'prefix',
-
-        連体化: 'bound to noun',
-        動詞: 'verb',
-        接続詞: 'conjunction',
-
-        一般: 'general',
-        自立: 'independent',
-        非自立: 'dependent',
-        基本形: 'basic form',
-
-        助詞: 'particle',
-        係助詞: 'binding particle',
-        格助詞: 'case-marking particle',
-        終助詞: 'sentence ending',
-        接続助詞: 'conjunction particle',
-
-        連用形: 'continuative form',
-        助動詞: 'auxiliary verb',
-        連語: 'compound word',
-        記号: 'sign',
-        句点: 'period',
-        読点: 'comma',
-        括弧開: 'opening bracket',
-        括弧閉: 'closing bracket',
-
-        形容詞: 'adjective',
-        連体詞: 'adnominal adjective',
-        感動詞: 'interjection',
-        副詞: 'adverb',
-        助詞類接続: 'particle-like',
-        フィラー: 'filler',
-    }
-
     class EntryLog extends HTMLElement {
-        kuromoji = null; //kuromoji tokenizer
         db       = null; //indexeddb connection
         $list    = null; //entry list container
 
@@ -198,77 +159,23 @@
             //this.attachShadow({ mode: 'open', delegatesFocus: true});
         }
 
-        connectedCallback() {
+        async connectedCallback() {
             // create element from template
             this.appendChild($logTemplate.content.cloneNode(true));
             this.$list = document.getElementById('gakuscan-entry-log');
 
             // request the indexedDB connection
-            const dbRequest = indexedDB.open("cap2txt-local", 2);
+            this.db = await getEntryRepo();
+        }
 
-            dbRequest.addEventListener('error', () => {
-                console.error("Could not connect to IndexedDB!");
-            });
-
-            dbRequest.addEventListener('success', (event) => {
-                this.db = event.target.result;
-
-                this.db.addEventListener('error', (event) => {
-                    // Generic error handler for all requests targeted at this database
-                    console.error(`Database error: ${event.target.error?.message}`);
-                });
-
-                //The database is ready
-                this.dispatchEvent(new CustomEvent(
-                    'gakuscan-log-ready',
-                    {
-                        bubbles: true,
-                        cancelable: true
-                    }
-                ));
-            });
-
-            dbRequest.addEventListener('upgradeneeded', (event) => {
-                // Migrate to newest version
-                const db = event.target.result;
-                db.createObjectStore("entries", { keyPath: "id", autoIncrement: true });
+        async renderStoredEntries() {
+            const entries = await this.db.load();
+            entries.forEach((entry) => {
+                this.renderEntry(entry);
             });
         }
 
-        renderStoredEntries() {
-            // read all entires and display them
-            const store = this.db.transaction(["entries"], "readwrite").objectStore('entries');
-            store.openCursor().addEventListener('success', (event) => {
-                let cursor = event.target.result;
-                if (cursor) {
-                    this.renderEntry(cursor.value);
-                    cursor.continue();
-                } else {
-                    // emit event
-                    this.dispatchEvent(new CustomEvent(
-                        'gakuscan-log-loaded',
-                        {
-                            bubbles: true,
-                            cancelable: true
-                        }
-                    ));
-                }
-            });
-        }
-
-        async setKuromoji(kuro) {
-            this.kuromoji = await new Promise((resolve, reject) => {
-                kuro.builder({ dicPath: "/node_modules/@sglkc/kuromoji/dict/" }).build((err, tokenizer) => {
-                    if(err) {
-                        reject();
-                    }
-                    // tokenizer is ready
-                    resolve(tokenizer);
-                });
-            });
-        }
-
-        addEntry(entry) {
+        async addEntry(entry) {
             if (entry === null || typeof entry !== 'object' || Array.isArray(entry) || !Object.hasOwn(entry, 'fullText')) {
                 return;
             }
@@ -277,23 +184,12 @@
                 entry.time = Math.floor(Date.now() / 1000);
             }
 
-            // save the new entry to the db and render if successful
-            const store = this.db.transaction(["entries"], "readwrite").objectStore('entries');
-            store.add(entry).addEventListener('success', (e) => {
-                entry.id = e.target.result;
-                this.renderEntry(entry);
-            });
+            entry = await this.db.add(entry);
+            this.renderEntry(entry);
         }
         
-        deleteEntry(id) {
-            // remove entry with given id from object store
-            const store = this.db.transaction(["entries"], "readwrite").objectStore('entries');
-            store.delete(id).addEventListener('success', () => {
-                this.removeEntry(id);
-            });
-        }
-
-        removeEntry(id) {
+        async deleteEntry(id) {
+            await this.db.delete(id);
             document.getElementById(`gakuscan-entry-${id}`).remove();
         }
 
@@ -301,23 +197,115 @@
             // get the needed element objects
             const $entryTmp     = $entryTemplate.content.cloneNode(true);
             const $entry        = $entryTmp.querySelector('.gakuscan-entry');
-            const $entryText    = $entryTmp.querySelector('.gakuscan-entry-text');
-            const $entryTime    = $entryTmp.querySelector('.gakuscan-entry-time');
-            const $entryEditBtn = $entryTmp.querySelector('.gakuscan-entry-edit');
             
             // set text, time and id
-            const { id, fullText, time } = entry;
-            $entryTime.innerText = (new Date(time * 1000)).toLocaleString(navigator.language);
-            $entry.id            = `gakuscan-entry-${id}`;
+            const { id, time }                                     = entry;
+            $entry.querySelector('.gakuscan-entry-time').innerText = (new Date(time * 1000)).toLocaleString(navigator.language);
+            $entry.id                                              = `gakuscan-entry-${id}`;
 
-            this.renderEntryText($entryText, fullText);
+            this.updateEntryView(entry, $entry);
+
+            // add handler for entry tools
+            $entry.querySelector('.gakuscan-entry-copy').addEventListener('click', () => {
+                const text = $entry.querySelector('.gakuscan-entry-text').innerText;
+                //console.log(text + 'copied to clipboard');
+                navigator.clipboard.writeText(text);
+            });
+            $entry.querySelector('.gakuscan-entry-delete').addEventListener('click', () => {
+                this.deleteEntry(id);
+            });
+            $entry.querySelector('.gakuscan-entry-edit').addEventListener('click', () => {
+                this.editEntry(entry, $entry);
+            });
+
+            // append the text to the top of the log
+            this.$list.insertBefore($entryTmp, this.$list.firstChild);
+        }
+
+        editEntry(entry, $entry) {
+            const $entryText    = $entry.querySelector('.gakuscan-entry-text');
+            const $entryEditBtn = $entry.querySelector('.gakuscan-entry-edit');
+
+            // create elements for editing an entry
+            const $editorWrapper = document.createElement('div'); 
+            const $editor        = document.createElement('textarea');
+
+            $editorWrapper.classList.add('gakuscan-edit-wrapper');
+            $editorWrapper.dataset.replicatedValue = $entryText.innerText
+            
+            $editor.classList.add('gakuscan-entry-text');
+            $editor.value = $entryText.innerText.replace(/<br\s*[\/]?>/gi, "\n");
+            
+            // hide original text and disable input
+            $entryText.classList.add('gakuscan-hidden');
+            $entryEditBtn.disabled = true;
+
+            // sync textarea content to wrapper data attribute
+            $editor.addEventListener('input', () => {
+                $editorWrapper.dataset.replicatedValue = $editor.value;
+            });
+
+            // apply changes when focus changes
+            $editor.addEventListener('focusout', async () => {
+                $editor.disabled = true;
+                entry.fullText   = $editor.value;
+                analyzeText(entry);
+                
+                //store in db
+                entry = await this.db.update(entry);
+                this.updateEntryView(entry, $entry);
+
+                $editorWrapper.remove();
+                $entryText.classList.remove('gakuscan-hidden');
+                $entryEditBtn.disabled = false;
+            }, false);
+
+            // add editor to DOM
+            $editorWrapper.append($editor);
+            $entryText.parentElement.insertBefore($editorWrapper, $entryText);
+            $editor.focus();
+        }
+
+        updateEntryView(entry, $entry) {
+            const $entryText  = $entry.querySelector('p.gakuscan-entry-text');
+            const $imgWrapper = $entry.querySelector('.gakuscan-entry-img');
+
+            // clear text
+            $entryText.innerHTML = '';
+
+            if (Object.hasOwn(entry, 'analizedText')) {
+                // perform morphological analysis
+                const tokens = entry.analizedText;
+                tokens.forEach((token) => {
+                    // create element for token
+                    const $token     = document.createElement('span');
+                    $token.innerText = token.text;
+
+                    // add details if known
+                    if (token.details) {
+                        token.details.forEach(detail => {
+                            $token.classList.add('gs-' + detail.replaceAll(' ', '-'));
+                        });
+                        $token.classList.add('gs-analized');
+
+                        // build tooltip from details
+                        $token.title = [token.basic_form, ...token.details].join(' · ');
+                    }
+                    // add token element to text container
+                    $entryText.appendChild($token);    
+                });
+            } else {
+                $entryText.innerText = entry.fullText;
+            }
+            
+            // clear image
+            $imgWrapper.innerHTML = '';
 
             // build image + annotations
-            if (Object.hasOwn(entry, 'img') && Object.hasOwn(entry, 'annotation')) {
-                const $imgWrapper = $entryTmp.querySelector('.gakuscan-entry-img');
-                const $img        = document.createElement('img');
+            if (Object.hasOwn(entry, 'image') && Object.hasOwn(entry, 'annotation')) {
+                const $img = document.createElement('img');
 
-                $img.src = entry.img;
+                $img.src = entry.image.selection.dataURL;
                 $imgWrapper.appendChild($img);
 
                 // add annotaions after image is loaded
@@ -326,11 +314,11 @@
                         const $annotation     = document.createElement('div');
                         $annotation.className = 'gakuscan-entry-anno';
 
-                        // convert coords from px to %
-                        const x = (annotation.bounds[0].x / $img.naturalWidth) * 100;
-                        const y = (annotation.bounds[0].y / $img.naturalHeight) * 100;
-                        const w = ((annotation.bounds[1].x - annotation.bounds[0].x) / $img.naturalWidth) * 100;
-                        const h = ((annotation.bounds[2].y - annotation.bounds[0].y) / $img.naturalHeight) * 100;
+                        // convert coords to %
+                        const x = annotation.bounds.x * 100;
+                        const y = annotation.bounds.y * 100;
+                        const w = annotation.bounds.w * 100;
+                        const h = annotation.bounds.h * 100;
     
                         // apply coords
                         $annotation.style.left   = `${x}%`;
@@ -343,109 +331,6 @@
                         $imgWrapper.appendChild($annotation);
                     });
                 });
-            }
-
-            // add handler for entry tools
-            $entryTmp.querySelector('.gakuscan-entry-copy').addEventListener('click', () => {
-                const text = $entryText.innerText;
-                console.log(text);
-                navigator.clipboard.writeText(text);
-            });
-            $entryTmp.querySelector('.gakuscan-entry-delete').addEventListener('click', () => {
-                this.deleteEntry(id);
-            });
-            $entryEditBtn.addEventListener('click', () => {
-                this.editEntry(entry, $entryText, $entryEditBtn);
-            });
-
-            // append the text to the top of the log
-            this.$list.insertBefore($entryTmp, this.$list.firstChild);
-        }
-
-        editEntry(entry, $textContainer, $editButton) {
-            // create elements for editing an entry
-            const $editorWrapper = document.createElement('div'); 
-            const $editor        = document.createElement('textarea');
-
-            $editorWrapper.classList.add('gakuscan-edit-wrapper');
-            $editorWrapper.dataset.replicatedValue = $textContainer.innerText
-            
-            $editor.classList.add('gakuscan-entry-text');
-            $editor.value = $textContainer.innerText.replace(/<br\s*[\/]?>/gi, "\n");
-            
-            // hide original text and disable input
-            $textContainer.classList.add('gakuscan-hidden');
-            $editButton.disabled = true;
-
-            // sync textarea content to wrapper data attribute
-            $editor.addEventListener('input', () => {
-                $editorWrapper.dataset.replicatedValue = $editor.value;
-            });
-
-            // apply changes when focus changes
-            $editor.addEventListener('focusout', () => {
-                $editor.disabled = true;
-                entry.fullText   = $editor.value;
-                
-                //store in db
-                const store = this.db.transaction(["entries"], "readwrite").objectStore('entries');
-                store.put(entry).addEventListener('success', () => {
-                    this.renderEntryText($textContainer, entry.fullText);
-    
-                    $editorWrapper.remove();
-                    $textContainer.classList.remove('gakuscan-hidden');
-                    $editButton.disabled = false;
-                });
-
-            }, false);
-
-            // add editor to DOM
-            $editorWrapper.append($editor);
-            $textContainer.parentElement.insertBefore($editorWrapper, $textContainer);
-            $editor.focus();
-        }
-
-        renderEntryText($textContainer, text) {
-            // clear container
-            $textContainer.innerHTML = '';
-
-            if (this.kuromoji) {
-                // perform morphological analysis
-                const tokens = this.kuromoji.tokenize(text);
-                tokens.forEach((token) => {
-                    // create element for token
-                    const $token     = document.createElement('span');
-                    $token.innerText = token.surface_form;
-
-                    // add details if known
-                    if (token.word_type == 'KNOWN') {
-                        let details = [token.basic_form]; //dictionary form
-
-                        ['pos','pos_detail_1','pos_detail_2','pos_detail_3'].forEach((key) => {
-                            let detail = token[key];
-                            if (detail == '*') {
-                                return;
-                            }
-                            
-                            // try to translate details and add to list
-                            if(Object.hasOwn(detailTranslation, detail)) {
-                                details.push(detailTranslation[detail]);
-                                $token.classList.add('gs-' + detailTranslation[detail].replaceAll(' ', '-'));
-                            } else {
-                                details.push(detail);
-                                $token.classList.add('gs-' + detail.replaceAll(' ', '-'));
-                            }
-                        });
-                        $token.classList.add('gs-analized');
-
-                        // build tooltip from details
-                        $token.title = details.join(' · ');
-                    }
-                    // add token element to text container
-                    $textContainer.appendChild($token);    
-                });
-            } else {
-                $textContainer.innerText = text;
             }
         }
     }

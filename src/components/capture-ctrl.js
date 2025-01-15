@@ -94,14 +94,35 @@ const $template = document.createElement('template');
                         height: $video.videoHeight
                     });
 
+                    $copyCanvas.width  = $video.videoWidth;
+                    $copyCanvas.height = $video.videoHeight;
+                    let copyCtx        = $copyCanvas.getContext('2d');
+                    copyCtx.drawImage($video, 0, 0);
+
+                    const frameDataURL = $copyCanvas.toDataURL('image/png');
+
                     $copyCanvas.width  = width;
                     $copyCanvas.height = height;
                     
-                    const copyCtx = $copyCanvas.getContext('2d');
                     copyCtx.drawImage($video, x, y, width, height, 0, 0, width, height);
                     
                     return {
-                        selected: $copyCanvas.toDataURL('image/png')
+                        selection: {
+                            dataURL: $copyCanvas.toDataURL('image/png'),
+                            width,
+                            height,
+                            bounds: {
+                                x: x / $video.videoWidth,
+                                y: y / $video.videoHeight,
+                                w: width / $video.videoWidth,
+                                h: height / $video.videoHeight
+                            }
+                        },
+                        frame: {
+                            dataURL: frameDataURL,
+                            width: $video.videoWidth,
+                            height: $video.videoHeight
+                        }
                     };
                 }
             };

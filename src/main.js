@@ -1,5 +1,6 @@
 import { getScanner } from './modules/gvision-scanner.js';
 import { getSettingsStore } from './modules/settings-store.js';
+import { analyzeText, setTokenizer } from './modules/text-analyzer.js';
 
 const userPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const settings        = getSettingsStore();
@@ -33,14 +34,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         //todo lock down application and show hint
     }
 
-    const $log    = document.querySelector('#gakuscan-log > gakuscan-entry-log');
+    setTokenizer(await new Promise((resolve, reject) => {
+        kuromoji.builder({ dicPath: "/node_modules/@sglkc/kuromoji/dict/" }).build((err, tokenizer) => {
+            if(err) {
+                reject();
+            }
+            // tokenizer is ready
+            resolve(tokenizer);
+        });
+    }));
+    const $log = document.querySelector('#gakuscan-log > gakuscan-entry-log');
 
     document.getElementById('gakuscan-capture').addEventListener('gakuscan-capture-selected', async ({detail}) => {
-        const {selected} = detail;
-        const result = await scanner.scan(selected);
-        $log.addEntry(result);
+        const entry = await scanner.scan(detail);
+        analyzeText(entry);
+        $log.addEntry(entry);
     });
 
-    await $log.setKuromoji(kuromoji);
     $log.renderStoredEntries();
 });
