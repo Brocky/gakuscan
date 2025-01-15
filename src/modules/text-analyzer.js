@@ -81,6 +81,7 @@ function analyzeText(entry) {
         let annotationIndex = 0;
         let textIndex = 0;
         entry.annotation.forEach((annotation) => {
+            delete annotation.tokens;
             let tokens = entry.analizedText.slice(textIndex);
             for (let i = 0; i < tokens.length; i++) {
                 if (tokens[i].text == annotation.text) {
@@ -92,8 +93,8 @@ function analyzeText(entry) {
                         annotation.tokens = [];
                     }
                     tokens[i].annotations.push(annotationIndex);
-                    annotation.tokens.push(i+textIndex);
-                    textIndex = i+1;
+                    annotation.tokens.push(textIndex+i);
+                    textIndex = textIndex+i+1;
                     
                     break;
                 }

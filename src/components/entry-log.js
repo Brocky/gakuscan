@@ -82,14 +82,6 @@ import { analyzeText } from "../modules/text-analyzer.js";
             display: flex;
             flex-direction: column;
         }
-        .gakuscan-entry-img > img {
-            max-height: 20rem;
-            max-width: 100%;
-        }
-        .gakuscan-entry-img div.gakuscan-entry-anno {
-            border: 1px solid;
-            position: absolute;
-        }
         @media (orientation: portrait) {
             .gakuscan-entry-wrapper {
                 display: flex;
@@ -104,45 +96,6 @@ import { analyzeText } from "../modules/text-analyzer.js";
             .gakuscan-entry-img > img {
                 max-width: 20rem;
             }
-        }
-
-        .gs-noun {
-            --highlight-color: #007ACC;
-        }
-        .gs-pronoun {
-            --highlight-color: #1E90FF;
-        }
-        .gs-verb {
-            --highlight-color: #FF4500;
-        }
-        .gs-adjective {
-            --highlight-color: #FFA500;
-        }
-        .gs-adnominal-adjective {
-            --highlight-color: #7CFC00;
-        }
-        .gs-particle {
-            --highlight-color: #228B22;
-        }
-        .gs-adverb {
-            --highlight-color: #FFD700;
-        }
-        .gs-auxiliary-verb {
-            --highlight-color: #800080;
-        }
-        .gs-conjunction {
-            --highlight-color: #40E0D0;
-        }
-        .gs-interjection {
-            --highlight-color: #FF69B4;
-        }
-        [data-highlight] .gs-analized {
-            background: color-mix(in srgb, var(--highlight-color, transparent) 50%, transparent);
-            border: .2rem solid color-mix(in srgb, var(--highlight-color, transparent) 20%, transparent);
-            background-clip: content-box;
-        }
-        .gs-analized:hover {
-            text-decoration: underline;
         }
     </style>
     <div id="gakuscan-entry-log">
@@ -176,19 +129,23 @@ import { analyzeText } from "../modules/text-analyzer.js";
         }
 
         async addEntry(entry) {
+            // do nothing if entry is no proper object
             if (entry === null || typeof entry !== 'object' || Array.isArray(entry) || !Object.hasOwn(entry, 'fullText')) {
                 return;
             }
 
+            // set timestamp if not present
             if(!Object.hasOwn(entry, 'time')) {
                 entry.time = Math.floor(Date.now() / 1000);
             }
 
+            // store to db and display
             entry = await this.db.add(entry);
             this.renderEntry(entry);
         }
         
         async deleteEntry(id) {
+            // delete entry and remove from DOM
             await this.db.delete(id);
             document.getElementById(`gakuscan-entry-${id}`).remove();
         }
@@ -230,9 +187,11 @@ import { analyzeText } from "../modules/text-analyzer.js";
             const $editorWrapper = document.createElement('div'); 
             const $editor        = document.createElement('textarea');
 
+            // the wrapper is used for proper display
             $editorWrapper.classList.add('gakuscan-edit-wrapper');
             $editorWrapper.dataset.replicatedValue = $entryText.innerText
             
+            // prepare editor
             $editor.classList.add('gakuscan-entry-text');
             $editor.value = $entryText.innerText.replace(/<br\s*[\/]?>/gi, "\n");
             
@@ -248,13 +207,16 @@ import { analyzeText } from "../modules/text-analyzer.js";
             // apply changes when focus changes
             $editor.addEventListener('focusout', async () => {
                 $editor.disabled = true;
+
+                // update entry with new text and re-run analysis
                 entry.fullText   = $editor.value;
                 analyzeText(entry);
                 
-                //store in db
+                // store updated entry
                 entry = await this.db.update(entry);
-                this.updateEntryView(entry, $entry);
 
+                // update view and remove editor
+                this.updateEntryView(entry, $entry);
                 $editorWrapper.remove();
                 $entryText.classList.remove('gakuscan-hidden');
                 $entryEditBtn.disabled = false;
@@ -274,9 +236,8 @@ import { analyzeText } from "../modules/text-analyzer.js";
             $entryText.innerHTML = '';
 
             if (Object.hasOwn(entry, 'analizedText')) {
-                // perform morphological analysis
-                const tokens = entry.analizedText;
-                tokens.forEach((token) => {
+                let i = 0;
+                entry.analizedText.forEach((token) => {
                     // create element for token
                     const $token     = document.createElement('span');
                     $token.innerText = token.text;
@@ -290,9 +251,31 @@ import { analyzeText } from "../modules/text-analyzer.js";
 
                         // build tooltip from details
                         $token.title = [token.basic_form, ...token.details].join(' · ');
+                        $token.id    = `gs-entry-${entry.id}-token-${i}`;
+
+                        // add handler for hover effect
+                        if (token.annotations) {
+                            $token.addEventListener('mouseenter', () => {
+                                token.annotations.forEach((annoId) => {
+                                    const $ = document.getElementById(`gs-entry-${entry.id}-anno-${annoId}`);
+                                    if ($) {
+                                        $.classList.add('gs-highlight');
+                                    }
+                                });
+                            }); 
+                            $token.addEventListener('mouseleave', () => {
+                                token.annotations.forEach((annoId) => {
+                                    const $ = document.getElementById(`gs-entry-${entry.id}-anno-${annoId}`);
+                                    if ($) {
+                                        $.classList.remove('gs-highlight');
+                                    }
+                                });
+                            });
+                        }
                     }
                     // add token element to text container
-                    $entryText.appendChild($token);    
+                    $entryText.appendChild($token);
+                    i++;
                 });
             } else {
                 $entryText.innerText = entry.fullText;
@@ -310,6 +293,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
 
                 // add annotaions after image is loaded
                 $img.addEventListener('load', () => {
+                    let i = 0;
                     entry.annotation.forEach(annotation => {
                         const $annotation     = document.createElement('div');
                         $annotation.className = 'gakuscan-entry-anno';
@@ -327,8 +311,41 @@ import { analyzeText } from "../modules/text-analyzer.js";
                         $annotation.style.height = `${h}%`;
 
                         $annotation.title = annotation.text;
+                        $annotation.id    = `gs-entry-${entry.id}-anno-${i}`;
+
+                        if(Object.hasOwn(annotation, 'tokens') && annotation.tokens) {
+                            const firstTokenId = annotation.tokens[0];
+                            const token = entry.analizedText[firstTokenId];
+
+                            if(token) {
+                                $annotation.title = [token.basic_form, ...token.details].join(' · ');
+                                token.details.forEach(detail => {
+                                    $annotation.classList.add('gs-' + detail.replaceAll(' ', '-'));
+                                });
+
+                                
+                                // add handler for hover effect
+                                $annotation.addEventListener('mouseenter', () => {
+                                    token.annotations.forEach((annoId) => {
+                                        const $ = document.getElementById(`gs-entry-${entry.id}-token-${firstTokenId}`);
+                                        if ($) {
+                                            $.classList.add('gs-highlight');
+                                        }
+                                    });
+                                }); 
+                                $annotation.addEventListener('mouseleave', () => {
+                                    token.annotations.forEach((annoId) => {
+                                        const $ = document.getElementById(`gs-entry-${entry.id}-token-${firstTokenId}`);
+                                        if ($) {
+                                            $.classList.remove('gs-highlight');
+                                        }
+                                    });
+                                });
+                            }
+                        }
     
                         $imgWrapper.appendChild($annotation);
+                        i++;
                     });
                 });
             }

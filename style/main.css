@@ -1,4 +1,4 @@
-
+/* Setting different variables for light and dark mode */
 :root {
     --bg-gradient: linear-gradient(135deg, #ffffff, #f0f0f0);
     --text-color: #383838;
@@ -48,7 +48,7 @@ header .gakuscan-logo {
     display: flex;
     align-items: center;
 }
-.gakuscan-hidden {
+.gs-hidden {
     display: none;
 }
 #gakuscan-log {
@@ -57,6 +57,62 @@ header .gakuscan-logo {
     flex-basis: 30%;
     overflow-y: scroll;
 }
+
+
+.gakuscan-entry-img > img {
+    max-height: 20rem;
+    max-width: 100%;
+}
+
+/* Highlight colors for different grammatical structures */
+.gs-noun {
+    --highlight-color: #007ACC;
+}
+.gs-pronoun {
+    --highlight-color: #1E90FF;
+}
+.gs-verb {
+    --highlight-color: #FF4500;
+}
+.gs-adjective {
+    --highlight-color: #FFA500;
+}
+.gs-adnominal-adjective {
+    --highlight-color: #7CFC00;
+}
+.gs-particle {
+    --highlight-color: #228B22;
+}
+.gs-adverb {
+    --highlight-color: #FFD700;
+}
+.gs-auxiliary-verb {
+    --highlight-color: #800080;
+}
+.gs-conjunction {
+    --highlight-color: #40E0D0;
+}
+.gs-interjection {
+    --highlight-color: #FF69B4;
+}
+/* Rules for applying highlight colors to tokens and annotations */
+[data-highlight] p.gakuscan-entry-text .gs-analized {
+    background: color-mix(in srgb, var(--highlight-color, transparent) 50%, transparent);
+    border: .2rem solid color-mix(in srgb, var(--highlight-color, transparent) 20%, transparent);
+    background-clip: content-box;
+}
+p.gakuscan-entry-text .gs-analized:hover, p.gakuscan-entry-text .gs-analized.gs-highlight {
+    text-decoration: underline;
+}
+.gakuscan-entry-img div.gakuscan-entry-anno {
+    background: color-mix(in srgb, var(--highlight-color, transparent) 30%, transparent);
+    position: absolute;
+}
+.gakuscan-entry-img div.gakuscan-entry-anno.gs-highlight {
+    border: .2rem solid color-mix(in srgb, var(--highlight-color, transparent) 80%, transparent);
+}
+
+
 @media (orientation: portrait) {
     main {
         flex-direction: column;
