@@ -5,15 +5,49 @@ import { analyzeText, setTokenizer } from './modules/text-analyzer.js';
 const userPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const settings        = getSettingsStore();
 
+let OCRScanner = null;
+
 // Initiales Laden des Themes
 document.documentElement.setAttribute('data-theme', settings.get('theme') || (userPrefersDark ? 'dark' : 'light'));
 settings.watch('theme', ({newValue}) => {
     document.documentElement.setAttribute('data-theme', newValue);
 });
 
-document.addEventListener("DOMContentLoaded", async () => {
 
+// Setup functionality after page is fully loaded
+document.addEventListener("DOMContentLoaded", async () => {
+    const $log     = document.querySelector('#gakuscan-log > gakuscan-entry-log');
+    const $capture = document.querySelector('#gakuscan-capture > gakuscan-capture-ctrl');
+
+    const showCaptureCtrl = () => {
+        OCRScanner = getScanner(settings.get('gcloud-vision-key'));
+        document.getElementById('gs-apikey-hint').classList.add('gs-hidden');
+        $capture.classList.remove('gs-hidden');
+    }; 
+
+    // show capture control if api key is already set
+    if (settings.get('gcloud-vision-key')) {
+        showCaptureCtrl();
+    }
+    // if api key is changed..
+    settings.watch('gcloud-vision-key', ({newValue}) => {
+        // ...hide capture control if empty...
+        if(!newValue) {
+            OCRScanner = null;
+            document.getElementById('gs-apikey-hint').classList.remove('gs-hidden');
+            $capture.classList.add('gs-hidden');
+            return;
+        }
+        // ...or show capture control
+        showCaptureCtrl();
+    });
+
+    // prepare dialog opener
     document.getElementById('gs-settings-btn').addEventListener('click', () => {
+        document.querySelector('gs-settings').open();
+    });
+    document.querySelector('a[href="#settings"]').addEventListener('click', (e) => {
+        e.preventDefault();
         document.querySelector('gs-settings').open();
     });
     document.getElementById('gs-about-btn').addEventListener('click', () => {
@@ -26,14 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('gs-privacy').open();
     });
 
-    // prepare OCR scanner
-    let gcloud_key = settings.get('gcloud-vision-key');
-    let scanner    = getScanner(gcloud_key);
-
-    if (!gcloud_key) {
-        //todo lock down application and show hint
-    }
-
+    // initialize kuromoji tokenizer
     setTokenizer(await new Promise((resolve, reject) => {
         kuromoji.builder({ dicPath: "/node_modules/@sglkc/kuromoji/dict/" }).build((err, tokenizer) => {
             if(err) {
@@ -43,13 +70,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             resolve(tokenizer);
         });
     }));
-    const $log = document.querySelector('#gakuscan-log > gakuscan-entry-log');
 
+    // add analysation after OCR scan
     document.getElementById('gakuscan-capture').addEventListener('gakuscan-capture-selected', async ({detail}) => {
-        const entry = await scanner.scan(detail);
+        const entry = await OCRScanner.scan(detail);
         analyzeText(entry);
         $log.addEntry(entry);
     });
 
+    // load and display stored entries
     $log.renderStoredEntries();
 });

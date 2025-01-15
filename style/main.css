@@ -48,6 +48,9 @@ header .gakuscan-logo {
     display: flex;
     align-items: center;
 }
+#gs-apikey-hint {
+    margin: auto;
+}
 .gs-hidden {
     display: none;
 }

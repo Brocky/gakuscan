@@ -36,7 +36,28 @@
         </header>
         <main>
             <section id="gakuscan-capture">
-                <gakuscan-capture-ctrl></gakuscan-capture-ctrl>
+                <gakuscan-capture-ctrl class="gs-hidden"></gakuscan-capture-ctrl>
+                <div id="gs-apikey-hint">
+                    <section>
+                        <h2>No Cloud Vision API key found</h2>
+                        <p>
+                            GakuScan requires a Google Cloud Vision API key to function, as it powers the OCR needed for text extraction.<br>
+                            If want to know more, please visit the <a href="https://github.com/Brocky/gakuscan/blob/main/docs/google-vision.md" target="_blank" rel="noopener noreferrer">documentation</a>.
+                        </p>
+                    </section>
+                    <section>
+                        <h3>Steps to Obtain a Google Cloud Vision API Key</h3>
+                        <ol>
+                            <li>Visit the <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">Google Cloud Console</a>.</li>
+                            <li>Create a new project or select an existing one.</li>
+                            <li>Enable the <a href="https://console.cloud.google.com/apis/library/vision.googleapis.com?hl=en" target="_blank" rel="noopener noreferrer">Google Cloud Vision API</a> for your project.</li>
+                            <li>Set up billing (you won't be charged unless you exceed the free tier).</li>
+                            <li><strong>Set up a Budget:</strong> Define a budget in the Google Cloud Console to monitor usage and avoid unexpected costs.<br>Configure alerts to notify you when usage approaches your budget limit.</li>
+                            <li>Generate and copy your API key. <strong>Do not share your API key with anyone!</strong></li>
+                            <li>Enter the API key in the <a href="#settings">settings</a>.</li>
+                        </ol>
+                    </section>
+                </div>
             </section>
             <section id="gakuscan-log">
                 <gakuscan-entry-log></gakuscan-entry-log>
