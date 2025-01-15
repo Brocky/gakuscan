@@ -35,7 +35,8 @@ header {
     padding: .4rem;
 }
 header .gakuscan-logo {
-    width: 4rem;
+    font-size: 6rem;
+    line-height: 4rem;
     margin-right: 2rem;
 }
 #gakuscan-capture {
@@ -97,6 +98,9 @@ header .gakuscan-logo {
 }
 .gs-interjection {
     --highlight-color: #FF69B4;
+}
+.gs-filler {
+    --highlight-color: #B0BEC5;
 }
 /* Rules for applying highlight colors to tokens and annotations */
 [data-highlight] p.gakuscan-entry-text .gs-analized {
