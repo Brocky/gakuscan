@@ -42,6 +42,9 @@ header .gakuscan-logo {
     line-height: 4rem;
     margin: 0 .5rem -1rem -.2rem;
 }
+h2, h3, h4 {
+    margin-block-end: .2rem;
+}
 #gakuscan-capture {
     flex-grow: 1;
     box-sizing: border-box;

@@ -32,4 +32,4 @@ While Google Cloud Vision currently provides the best results, the app's roadmap
 ## Conclusion
 By using the Google Cloud Vision API, GakuScan ensures the best OCR experience across diverse media. With a generous free tier and minimal costs beyond that, it's an accessible solution for most users. As the app improves, additional OCR options will become available, giving you more flexibility and control.
 
-Thank you for choosing GakuScan!
+Thank you for using GakuScan!
