@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "npx http-server",
     "sserve": "npx http-server -S",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [
     "Japanese",
