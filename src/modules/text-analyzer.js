@@ -40,7 +40,23 @@ const detailTranslation = {
     助詞類接続: 'particle-like',
     フィラー: 'filler',
 }
+const signReplace = {
+    '･･･':'…',
+    '..':'‥',
+    '-':'ー',
+    '~':'〜',
+};
 let tokenizer = null;
+
+function replaceSigns(str) {
+    const keys = Object.keys(signReplace);
+    // Create a regex pattern matching all keys
+    const pattern = new RegExp(keys.join('|'), 'g');
+
+    return str.replace(pattern, (match) => {
+        return signReplace[match] || match;
+    });
+}
 
 function analyzeText(entry) {
     if(!tokenizer) {
@@ -48,7 +64,7 @@ function analyzeText(entry) {
     }
 
     entry.analizedText = [];
-    const tokens = tokenizer.tokenize(entry.fullText);
+    const tokens = tokenizer.tokenize(replaceSigns(entry.fullText));
 
     tokens.forEach((token) => {
         let analized = {
@@ -84,6 +100,7 @@ function analyzeText(entry) {
         let textIndex = 0;
         entry.annotation.forEach((annotation) => {
             delete annotation.tokens;
+            annotation.text = replaceSigns(annotation.text);
             let tokens = entry.analizedText.slice(textIndex);
             for (let i = 0; i < tokens.length; i++) {
                 if (tokens[i].text == annotation.text) {

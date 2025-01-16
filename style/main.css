@@ -99,7 +99,8 @@ header .gakuscan-logo {
 .gs-interjection {
     --highlight-color: #FF69B4;
 }
-.gs-filler {
+.gs-filler,
+.gs-sign {
     --highlight-color: #B0BEC5;
 }
 /* Rules for applying highlight colors to tokens and annotations */
