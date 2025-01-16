@@ -16,6 +16,11 @@ const $template = document.createElement('template');
             border: .5rem dashed currentColor;
             background: none;
             font-size: 20rem;
+            transition: all var(--transition-time);
+        }
+        button#gakuscan-capture-start:active {
+            transform: scale(.98);
+            color: color-mix(in srgb, var(--text-color) 33%, transparent);
         }
         .gakuscan-capture-wrapper {
             position: relative;

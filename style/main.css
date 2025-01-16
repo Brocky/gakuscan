@@ -3,13 +3,16 @@
     --bg-gradient: linear-gradient(135deg, #ffffff, #f0f0f0);
     --text-color: #383838;
     --border-style: .1rem solid color-mix(in srgb, var(--text-color) 8%, transparent);
-    --box-shadow: color-mix(in srgb, var(--text-color) 8%, transparent) 0px 20px 25px -5px, color-mix(in srgb, var(--text-color) 2%, transparent) 0px 10px 10px -5px;
+    --box-shadow: color-mix(in srgb, #383838 8%, transparent) 0 1.429rem 1.786rem -.357px, color-mix(in srgb, #383838 2%, transparent) 0 .714rem .714rem -.357rem;
+    --box-shadow-highlight: color-mix(in srgb, #383838 12%, transparent) 0 1.429rem 1.786rem -.357px, color-mix(in srgb, #383838 4%, transparent) 0 .714rem .714rem -.357rem;
+    --transition-time: 100ms;
 }
 [data-theme="dark"] {
     --bg-gradient: linear-gradient(135deg, #1e0036, #000428);
     --text-color: #e0e0e0;
 }
 html, body {
+    font-size: 14px;
     font-family:'Roboto','Hiragino Sans','Meiryo','Hiragino Kaku Gothic ProN',sans-serif;
     margin: 0;
     height: 100vh;
@@ -37,7 +40,7 @@ header {
 header .gakuscan-logo {
     font-size: 6rem;
     line-height: 4rem;
-    margin-right: 2rem;
+    margin: 0 .5rem -1rem -.2rem;
 }
 #gakuscan-capture {
     flex-grow: 1;
@@ -61,7 +64,6 @@ header .gakuscan-logo {
     flex-basis: 30%;
     overflow-y: scroll;
 }
-
 
 .gakuscan-entry-img > img {
     max-height: 20rem;

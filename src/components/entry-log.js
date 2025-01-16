@@ -35,7 +35,6 @@ import { analyzeText } from "../modules/text-analyzer.js";
             margin-bottom: .8rem;
             display: flex;
             flex-direction: column;
-            transition: box-shadow 0.3s, color 0.3s;
         }
         .gakuscan-entry-text {
             flex-grow: 1;

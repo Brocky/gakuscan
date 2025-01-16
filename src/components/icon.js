@@ -3,6 +3,8 @@
     $template.innerHTML = `
     <style>
         svg.gs-icon {
+            position: relative;
+            top: .125rem;
             fill: currentColor;
             height: 1em;
             width: 1em;
