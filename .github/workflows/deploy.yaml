@@ -29,6 +29,7 @@ jobs:
       - name: Deploy to server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          TARGET_USER: ${{ secrets.DEPLOY_USER }}
           TARGET_SERVER: ${{ secrets.DEPLOY_SERVER }}
           TARGET_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
@@ -38,15 +39,15 @@ jobs:
           ssh-keyscan -H "$TARGET_SERVER" >> ~/.ssh/known_hosts
 
           # Define taget and temp dir
-          TEMP_PATH="~/deploy.tmp"
+          TEMP_PATH="$TARGET_PATH.tmp"
           FINAL_PATH="$TARGET_PATH"
 
           # sync files to remote
-          rsync -avz --delete . "user@$TARGET_SERVER:$TEMP_PATH"
+          rsync -avz --delete . "$TARGET_USER@$TARGET_SERVER:$TEMP_PATH"
 
           # Switch current release with previous
-          ssh user@$TARGET_SERVER "
-            mv $FINAL_PATH ~/deploy.bak || true;
+          ssh $TARGET_USER@$TARGET_SERVER "
+            mv $FINAL_PATH $FINAL_PATH.bak || true;
             mv $TEMP_PATH $FINAL_PATH;
           "
           
