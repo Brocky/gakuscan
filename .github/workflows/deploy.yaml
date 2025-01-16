@@ -39,7 +39,7 @@ jobs:
           ssh-keyscan -H "$TARGET_SERVER" >> ~/.ssh/known_hosts
 
           # Define taget and temp dir
-          TEMP_PATH="$TARGET_PATH.tmp"
+          TEMP_PATH="~/deploy.tmp"
           FINAL_PATH="$TARGET_PATH"
 
           # sync files to remote
@@ -47,7 +47,7 @@ jobs:
 
           # Switch current release with previous
           ssh $TARGET_USER@$TARGET_SERVER "
-            mv $FINAL_PATH $FINAL_PATH.bak || true;
+            mv $FINAL_PATH ~/deploy.bak || true;
             mv $TEMP_PATH $FINAL_PATH;
           "
           
