@@ -81,8 +81,6 @@
             const icon = this.getAttribute('icon');
             const $icon = $icons.querySelector(`#gs-icon-${icon}`);
 
-            console.log(icon, $icon);
-
             $svg.innerHTML = $icon.innerHTML;
             $svg.setAttribute('viewBox', $icon.getAttribute('viewBox'));
         }
