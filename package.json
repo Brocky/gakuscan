@@ -1,6 +1,6 @@
 {
   "name": "gakuscan",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "description": "An immersive Japanese learning tool that uses OCR to highlight grammar and assist learners in understanding Japanese text from games, manga, and other digital media.",
   "main": "index.js",
   "scripts": {
