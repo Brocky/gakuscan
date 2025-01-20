@@ -22,14 +22,14 @@ Thank you for using GakuScan!
 
 ## Get involved
 Have **feedback**, **questions**, or **ideas** to improve GakuScan?  
-Join our official [Discord server](ttps://discord.com/invite/mDumA87rph) to connect with the community, get support, and stay updated on the latest features and developments.
+Join our official [Discord server](https://discord.com/invite/mDumA87rph) to connect with the community, get support, and stay updated on the latest features and developments.
 
 ## Installation
 If you want to use a local copy, install the dependencies as with any other node application.
 ```bash
 npm install
 ```
-GakuScan is developed with a minimalistic approach and therefore only has a handfull of dependencies. It don't even need it's own backend infrastructure. All you need to do is serve the application files like any static web page. If you don't know how to do that, you can simply run the following command.
+GakuScan is developed with a [minimalistic approach](./docs/design-philosophy.md#minimalism-first) and therefore only has a handfull of dependencies. It don't even need it's own backend infrastructure. All you need to do is serve the application files like any static web page. If you don't know how to do that, you can simply run the following command.
 ```bash
 npm run serve
 ```
