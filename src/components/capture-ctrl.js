@@ -56,10 +56,12 @@ const $template = document.createElement('template');
             super();
             this.attachShadow({ mode: 'open'});
             this.selectionCanvasContext = null;
+            this.scale = 1;
             this.selection = {
                 active: false,
-                start:  {x:0, y:0},
-                end:    {x:0, y:0},
+                start: {x:0, y:0},
+                end: {x:0, y:0},
+                ctrl: this,
                 getRect: function({width, height}) {
                     // clone coords
                     let start  = {...this.start};
@@ -85,12 +87,36 @@ const $template = document.createElement('template');
                     };
                 },
                 draw: function (ctx) {
-                    const {x, y, width, height} = this.getRect(ctx.canvas);
+                    let dashOffset = 0;
+                    const drawFrame = () => {
+                        const {x, y, width, height} = this.getRect(ctx.canvas);
+                        // clear canvas
+                        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    // draw rectangle
-                    ctx.strokeStyle = "green";
-                    ctx.strokeRect(x, y, width, height);
+                        // fill background
+                        ctx.fillStyle = "rgba(34, 34, 34, 0.4)";
+                        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                        // clear selection
+                        ctx.clearRect(x, y, width, height);
+    
+                        // draw selection rectangle
+                        ctx.beginPath();
+                        ctx.setLineDash([10 * this.ctrl.scale, 5 * this.ctrl.scale]);
+                        ctx.lineDashOffset = dashOffset;
+                        ctx.strokeStyle = "green";
+                        ctx.lineWidth = 2 * this.ctrl.scale;
+                        ctx.strokeRect(x, y, width, height);
+                        ctx.closePath();
+
+                        if(this.active) {
+                            dashOffset -= 1 * this.ctrl.scale;
+                            requestAnimationFrame(drawFrame);
+                        } else {
+                            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                        }
+                    };
+                    requestAnimationFrame(drawFrame);
                 },
                 getSelection: function ($video) {
                     const $copyCanvas = document.createElement('canvas');
@@ -148,6 +174,8 @@ const $template = document.createElement('template');
                 this.selection.active  = true;
                 this.selection.start.x = this.selection.end.x = offsetX / $canvas.offsetWidth;
                 this.selection.start.y = this.selection.end.y = offsetY / $canvas.offsetHeight;
+
+                this.selection.draw(this.canvasContext);
             };
             // update selection
             $canvas.onmousemove = ({offsetX, offsetY}) => {
@@ -156,7 +184,6 @@ const $template = document.createElement('template');
                 }
                 this.selection.end.x = offsetX / $canvas.offsetWidth;
                 this.selection.end.y = offsetY / $canvas.offsetHeight;
-                this.selection.draw(this.canvasContext);
             };
             // apply selection
             $canvas.onmouseup = ({offsetX, offsetY, button}) => {
@@ -166,7 +193,6 @@ const $template = document.createElement('template');
                 this.selection.end.x = offsetX / $canvas.offsetWidth;
                 this.selection.end.y = offsetY / $canvas.offsetHeight;
                 this.selection.active = false;
-                this.selection.draw(this.canvasContext);
 
                 // emit event
                 this.dispatchEvent(new CustomEvent(
@@ -184,6 +210,12 @@ const $template = document.createElement('template');
                 $canvas.width       = $video.videoWidth;
                 $canvas.height      = $video.videoHeight;
                 this.canvasContext  = $canvas.getContext('2d');
+
+                const scale = [
+                    $canvas.width / $canvas.offsetWidth,
+                    $canvas.height / $canvas.offsetHeight
+                ];
+                this.scale = (scale[0] + scale[1]) / 2;
             }, false);
 
             // start capturing media
