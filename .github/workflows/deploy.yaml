@@ -43,7 +43,7 @@ jobs:
           FINAL_PATH="$TARGET_PATH"
 
           # sync files to remote
-          rsync -avz --delete . "$TARGET_USER@$TARGET_SERVER:$TEMP_PATH"
+          rsync -avz --delete --filter=':- .deployignore' . "$TARGET_USER@$TARGET_SERVER:$TEMP_PATH"
 
           # Switch current release with previous
           ssh $TARGET_USER@$TARGET_SERVER "
