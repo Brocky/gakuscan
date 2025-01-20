@@ -47,6 +47,19 @@ header .gakuscan-logo {
 h2, h3, h4 {
     margin-block-end: .2rem;
 }
+a {
+    color: color-mix(in srgb, var(--text-color) 20%, #007ACC);
+}
+a:visited {
+    color: color-mix(in srgb, var(--text-color) 60%, #db63ff);
+}
+a:hover {
+    color: color-mix(in srgb, var(--text-color) 60%, #007ACC) !important;
+}
+a:active {
+    color: color-mix(in srgb, var(--text-color) 40%, #007ACC) !important;
+    transform: translateX(-.1rem);
+}
 #gakuscan-capture {
     flex-grow: 1;
     box-sizing: border-box;
