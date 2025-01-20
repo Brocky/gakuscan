@@ -1,5 +1,6 @@
 /* Setting different variables for light and dark mode */
 :root {
+    --bg-plain: #f0f0f0;
     --bg-gradient: linear-gradient(135deg, #ffffff, #f0f0f0);
     --text-color: #383838;
     --border-style: .1rem solid color-mix(in srgb, var(--text-color) 8%, transparent);
@@ -8,7 +9,8 @@
     --transition-time: 100ms;
 }
 [data-theme="dark"] {
-    --bg-gradient: linear-gradient(135deg, #1e0036, #000428);
+    --bg-plain: #143a45;
+    --bg-gradient: linear-gradient(30deg, #143a45 0%, #152d33 90%, #1a373e 100%);
     --text-color: #e0e0e0;
 }
 html, body {

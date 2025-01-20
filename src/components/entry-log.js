@@ -29,6 +29,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
         }
         .gakuscan-entry {
             position: relative;
+            background: color-mix(in srgb, var(--bg-plain) 70%, transparent);
             box-shadow: var(--box-shadow);
             border: var(--border-style);
             padding: .2rem;
