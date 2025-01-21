@@ -26,11 +26,12 @@ const $template = document.createElement('template');
             position: relative;
             width: fit-content;
             height: fit-content;
+            max-height: 100%;
             margin: auto;
         }
         video#gakuscan-capture-vid {
             width: 100%;
-            max-height: 100vh;
+            max-height: 100%;
         }
         canvas#gakuscan-capture-canvas {
             position: absolute;
