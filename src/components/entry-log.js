@@ -8,12 +8,15 @@ import { analyzeText } from "../modules/text-analyzer.js";
         <span class="gakuscan-entry-time"></span>
         <div class="gakuscan-entry-wrapper">
             <p class="gakuscan-entry-text"></p>
-            <figure class="gakuscan-entry-img"></figure>
+            <figure class="gs-entry-img" data-zoom="in">
+                <div class="gs-entry-selection"></div>
+            </figure>
         </div>
         <gs-menu class="gakuscan-entry-tools">
-            <li><gs-btn icon="copy" class="gakuscan-entry-copy"></gs-btn></li>
-            <li><gs-btn icon="edit" class="gakuscan-entry-edit"></gs-btn></li>
-            <li><gs-btn icon="trash" class="gakuscan-entry-delete"></gs-btn></li>
+            <li><gs-btn icon="zoom-out" title="Toggle zoom" class="gakuscan-entry-zoom gs-hidden"></gs-btn></li>
+            <li><gs-btn icon="copy" title="Copy to clipboard" class="gakuscan-entry-copy"></gs-btn></li>
+            <li><gs-btn icon="edit" title="Edit scanned text" class="gakuscan-entry-edit"></gs-btn></li>
+            <li><gs-btn icon="trash" title="Delete entry" class="gakuscan-entry-delete"></gs-btn></li>
         </gs-menu>
     </section>
     `;
@@ -72,12 +75,29 @@ import { analyzeText } from "../modules/text-analyzer.js";
             padding: 0 .5rem;
             white-space: pre-line;
         }
-        .gakuscan-entry-img {
+        .gs-entry-img {
             position: relative;
             height: fit-content;
             width: fit-content;
             margin: .5rem auto;
         }
+        .gs-entry-img[data-zoom="in"] > img {
+            display: none;
+        }
+        .gs-entry-selection {
+            top: 0;
+            left: 0;
+            transition: top, left, transform var(--transition-time);
+        }
+        .gs-entry-img[data-zoom="out"] .gs-entry-selection {
+            position: absolute;
+            top: var(--bound-y);
+            left: var(--bound-x);
+            width: var(--bound-w);
+            height: var(--bound-h);
+            border: .1rem dashed green;
+        }
+
         .gakuscan-entry-wrapper {
             display: flex;
             flex-direction: column;
@@ -87,13 +107,10 @@ import { analyzeText } from "../modules/text-analyzer.js";
                 display: flex;
                 flex-direction: row-reverse;
             }
-            .gakuscan-entry-img {
-                position: relative;
-                height: fit-content;
-                width: fit-content;
+            .gs-entry-img {
                 margin-right: .5rem;
             }
-            .gakuscan-entry-img > img {
+            .gs-entry-img > img {
                 max-width: 20rem;
             }
         }
@@ -163,6 +180,17 @@ import { analyzeText } from "../modules/text-analyzer.js";
             this.updateEntryView(entry, $entry);
 
             // add handler for entry tools
+            const $zoomBtn = $entry.querySelector('.gakuscan-entry-zoom');
+            $zoomBtn.addEventListener('click', () => {
+                const $imgWrapper = $entry.querySelector('.gs-entry-img');
+                if ($imgWrapper.dataset.zoom == 'in') {
+                    $imgWrapper.dataset.zoom = 'out';
+                    $zoomBtn.setAttribute('icon', 'zoom-in');
+                } else {
+                    $imgWrapper.dataset.zoom = 'in';
+                    $zoomBtn.setAttribute('icon', 'zoom-out');
+                }
+            });
             $entry.querySelector('.gakuscan-entry-copy').addEventListener('click', () => {
                 const text = $entry.querySelector('.gakuscan-entry-text').innerText;
                 //console.log(text + 'copied to clipboard');
@@ -229,11 +257,16 @@ import { analyzeText } from "../modules/text-analyzer.js";
         }
 
         updateEntryView(entry, $entry) {
-            const $entryText  = $entry.querySelector('p.gakuscan-entry-text');
-            const $imgWrapper = $entry.querySelector('.gakuscan-entry-img');
+            const $entryText        = $entry.querySelector('p.gakuscan-entry-text');
+            const $imgWrapper       = $entry.querySelector('.gs-entry-img');
+            const $selectionWrapper = $entry.querySelector('.gs-entry-selection');
+            const $zoomBtn          = $entry.querySelector('.gakuscan-entry-zoom');
+            
+            let $frame = $imgWrapper.querySelector('img');
 
             // clear text
             $entryText.innerHTML = '';
+            $zoomBtn.classList.add('gs-hidden');
 
             if (Object.hasOwn(entry, 'analizedText')) {
                 let i = 0;
@@ -282,33 +315,54 @@ import { analyzeText } from "../modules/text-analyzer.js";
             }
             
             // clear image
-            $imgWrapper.innerHTML = '';
+            $selectionWrapper.innerHTML = '';
+            if ($frame) {
+                $frame.remove();
+            }
 
             // build image + annotations
             if (Object.hasOwn(entry, 'image') && Object.hasOwn(entry, 'annotation')) {
-                const $img = document.createElement('img');
+                const $selection = document.createElement('img');
 
-                $img.src = entry.image.selection.dataURL;
-                $imgWrapper.appendChild($img);
+                $selection.src = entry.image.selection.dataURL;
+                $selectionWrapper.appendChild($selection);
+
+                // convert selection bounds and assign as css variable
+                const bounds = {
+                    x: (entry.image.selection.bounds.x * 100) + '%',
+                    y: (entry.image.selection.bounds.y * 100) + '%',
+                    w: (entry.image.selection.bounds.w * 100) + '%',
+                    h: (entry.image.selection.bounds.h * 100) + '%'
+                }
+                let styleVars = '';
+                Object.keys(bounds).forEach((key) => {
+                    styleVars += `--bound-${key}: ` + bounds[key] + ';';
+                });
+                $selectionWrapper.setAttribute('style', styleVars);
+
+                // if frame is available enable zoom-out
+                if (Object.hasOwn(entry.image, 'frame')) {
+                    $frame = document.createElement('img');
+                    $frame.src = entry.image.frame.dataURL;
+                    $imgWrapper.insertBefore($frame, $selectionWrapper);
+
+                    $frame.addEventListener('load', () => {
+                        $zoomBtn.classList.remove('gs-hidden');
+                    });
+                }
 
                 // add annotaions after image is loaded
-                $img.addEventListener('load', () => {
+                $selection.addEventListener('load', () => {
                     let i = 0;
                     entry.annotation.forEach(annotation => {
                         const $annotation     = document.createElement('div');
                         $annotation.className = 'gakuscan-entry-anno';
 
-                        // convert coords to %
-                        const x = annotation.bounds.x * 100;
-                        const y = annotation.bounds.y * 100;
-                        const w = annotation.bounds.w * 100;
-                        const h = annotation.bounds.h * 100;
-    
                         // apply coords
-                        $annotation.style.left   = `${x}%`;
-                        $annotation.style.top    = `${y}%`;
-                        $annotation.style.width  = `${w}%`;
-                        $annotation.style.height = `${h}%`;
+                        $annotation.style.left   = (annotation.bounds.x * 100) + '%';
+                        $annotation.style.top    = (annotation.bounds.y * 100) + '%';
+                        $annotation.style.width  = (annotation.bounds.w * 100) + '%';
+                        $annotation.style.height = (annotation.bounds.h * 100) + '%';
 
                         $annotation.title = annotation.text;
                         $annotation.id    = `gs-entry-${entry.id}-anno-${i}`;
@@ -344,7 +398,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
                             }
                         }
     
-                        $imgWrapper.appendChild($annotation);
+                        $selectionWrapper.appendChild($annotation);
                         i++;
                     });
                 });

@@ -40,7 +40,7 @@ header {
     padding: .4rem;
 }
 header .gakuscan-logo {
-    font-size: 6rem;
+    font-size: 4rem;
     line-height: 4rem;
     margin: 0 .5rem -1rem -.2rem;
 }
@@ -83,7 +83,7 @@ a:active {
     overflow-y: scroll;
 }
 
-.gakuscan-entry-img > img {
+.gs-entry-img img {
     max-height: 20rem;
     max-width: 100%;
 }
@@ -133,12 +133,12 @@ p.gakuscan-entry-text .gs-analized:hover,
 p.gakuscan-entry-text .gs-analized.gs-highlight {
     text-decoration: underline;
 }
-.gakuscan-entry-img div.gakuscan-entry-anno {
+.gs-entry-img div.gakuscan-entry-anno {
     background: color-mix(in srgb, var(--highlight-color, transparent) 30%, transparent);
     position: absolute;
 }
-.gakuscan-entry-img div.gakuscan-entry-anno:hover, 
-.gakuscan-entry-img div.gakuscan-entry-anno.gs-highlight {
+.gs-entry-img div.gakuscan-entry-anno:hover, 
+.gs-entry-img div.gakuscan-entry-anno.gs-highlight {
     border: .2rem solid color-mix(in srgb, var(--highlight-color, transparent) 80%, transparent);
 }
 

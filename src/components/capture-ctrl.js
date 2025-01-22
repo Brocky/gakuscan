@@ -45,7 +45,7 @@ const $template = document.createElement('template');
             display: none;
         }
     </style>
-    <button id="gakuscan-capture-start"><gs-icon icon="capture" /></button>
+    <button id="gakuscan-capture-start" title="Start sharing content"><gs-icon icon="capture" title="Start sharing content" ></gs-icon></button>
     <div class="gakuscan-capture-wrapper">
         <video id="gakuscan-capture-vid" class="gakuscan-hidden" autoplay muted></video>
         <canvas id="gakuscan-capture-canvas" class="gakuscan-hidden"></canvas>

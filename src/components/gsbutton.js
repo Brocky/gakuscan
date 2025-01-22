@@ -15,7 +15,7 @@
             font-size: 1.1rem;
             justify-content: center;
             margin: 0;
-            padding: .4rem;
+            padding: .25rem;
             position: relative;
             text-decoration: none;
             transition: all var(--transition-time);
@@ -26,6 +26,7 @@
             width: auto;
             min-width: 2.3rem;
             min-height: 2.3rem;
+            height: 100%;
         }
 
         button:hover,
@@ -50,26 +51,59 @@
     `;
 
     class GSButton extends HTMLElement {
-        icon= null
+        static observedAttributes = ['submit','icon','title'];
+
         constructor() {
             super();
             this.attachShadow({ mode: 'open'});
             this.shadowRoot.appendChild($temp.content.cloneNode(true));
         }
-        connectedCallback() {
-            const icon   = this.getAttribute('icon');
-            const submit = this.getAttribute('submit');
 
-            if (icon) {
-                const $icon = document.createElement('gs-icon');
-                $icon.setAttribute('icon', icon);
+        attributeChangedCallback(name, oldValue, newValue) {
+            switch (name) {
+                case 'submit':
+                    this.setType(newValue);
+                    break;
+                case 'title':
+                    this.setTitle(newValue);
+                    break;
+                case 'icon':
+                    this.setIcon(newValue);
+                    break;
+            }
+        }
+
+        setType(isSubmit) {
+            const $btn = this.shadowRoot.querySelector('button');
+
+            if (isSubmit) {
+                $btn.setAttribute('type', 'submit');
+                return;
+            }
+            $btn.setAttribute('type', 'button');
+        }
+
+        setIcon(icon) {
+            let $icon = this.querySelector('gs-icon');
+
+            if (!$icon) {
                 if (this.innerHTML) {
                     this.append("\u00A0");
                 }
+                $icon = document.createElement('gs-icon');
+                $icon.classList.add('gs-btn-icon');
                 this.appendChild($icon);
             }
-            if (submit != null) {
-                this.shadowRoot.querySelector('button').setAttribute('type', 'submit');
+            $icon.setAttribute('icon', icon);
+        }
+
+        setTitle(title) {
+            const $btn  = this.shadowRoot.querySelector('button');
+            const $icon = this.querySelector('gs-icon');
+
+            $btn.setAttribute('title', title);
+            if ($icon) {
+                $icon.setAttribute('title', title);
             }
         }
     }
