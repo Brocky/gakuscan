@@ -125,7 +125,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
 
         constructor() {
             super();
-            //shadowDOM does not work with Yomitan
+            //shadowDOM does not work with Yomitan see (Yomitan#1044)[https://github.com/yomidevs/yomitan/issues/1044]
             //this.attachShadow({ mode: 'open', delegatesFocus: true});
         }
 
