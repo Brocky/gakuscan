@@ -1,3 +1,6 @@
+/**
+ * Icons from Asoka at (svgrepo)[https://www.svgrepo.com/collection/asoka-interface-icons/] under CC0
+ */
 (function() {
     const $template = document.createElement('template');
     $template.innerHTML = `
