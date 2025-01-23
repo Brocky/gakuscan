@@ -30,8 +30,8 @@
             animation-delay: 2s;
         }
         [data-animate=loading] #gs-logo-clip>rect {
-            width: 12;
-            height: 41;
+            width: 12px;
+            height: 41px;
             x: 5;
             y: 2;
             animation: scanAnimation 2.5s infinite;
@@ -100,7 +100,7 @@
                 return;
             }
             const $svg = this.shadowRoot.querySelector('svg');
-            if (!newValue) {
+            if (!newValue && newValue !== '') {
                 delete $svg.dataset.animate;
                 $svg.setAttribute('role', 'img');
                 $svg.querySelector('title').innerHTML = 'GakuScan';

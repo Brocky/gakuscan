@@ -73,8 +73,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // add analysation after OCR scan
     document.getElementById('gakuscan-capture').addEventListener('gakuscan-capture-selected', async ({detail}) => {
+        const {removeLoader} = $log.showLoadingAnim();
         const entry = await OCRScanner.scan(detail);
         analyzeText(entry);
+        removeLoader();
         $log.addEntry(entry);
     });
 

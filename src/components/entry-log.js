@@ -2,6 +2,12 @@ import { getEntryRepo } from "../modules/entry-repository.js";
 import { analyzeText } from "../modules/text-analyzer.js";
 
 (function () {
+    const $loadingTemplate = document.createElement('template');
+    $loadingTemplate.innerHTML = `
+    <section class="gs-entry-loading">
+        <gs-logo loading></gs-logo>
+    </section>
+    `;
     const $entryTemplate = document.createElement('template');
     $entryTemplate.innerHTML = `
     <section class="gakuscan-entry" data-highlight>
@@ -30,15 +36,21 @@ import { analyzeText } from "../modules/text-analyzer.js";
         .gakuscan-hidden {
             display: none;
         }
+        #gakuscan-entry-log > section {
+            display: flex;
+            justify-content: center;
+        }
+        .gs-entry-loading {
+            font-size: 5rem;
+        }
         .gakuscan-entry {
+            flex-direction: column;
             position: relative;
             background: color-mix(in srgb, var(--bg-plain) 70%, transparent);
             box-shadow: var(--box-shadow);
             border: var(--border-style);
             padding: .2rem;
             margin-bottom: .8rem;
-            display: flex;
-            flex-direction: column;
         }
         .gakuscan-entry-text {
             flex-grow: 1;
@@ -127,22 +139,40 @@ import { analyzeText } from "../modules/text-analyzer.js";
             super();
             //shadowDOM does not work with Yomitan see (Yomitan#1044)[https://github.com/yomidevs/yomitan/issues/1044]
             //this.attachShadow({ mode: 'open', delegatesFocus: true});
-        }
 
-        async connectedCallback() {
             // create element from template
             this.appendChild($logTemplate.content.cloneNode(true));
             this.$list = document.getElementById('gakuscan-entry-log');
+        }
 
+        async connectedCallback() {
             // request the indexedDB connection
             this.db = await getEntryRepo();
         }
 
         async renderStoredEntries() {
+            const {removeLoader} = this.showLoadingAnim();
             const entries = await this.db.load();
             entries.forEach((entry) => {
                 this.renderEntry(entry);
             });
+            removeLoader();
+        }
+
+        showLoadingAnim(bottom = false) {
+            // display loading info
+            const $loader = $loadingTemplate.content.querySelector('.gs-entry-loading').cloneNode(true);
+            if (bottom) {
+                this.$list.append($loader);
+            } else {
+                this.$list.prepend($loader);
+            }
+            return {
+                $: $loader,
+                removeLoader: () => {
+                    $loader.remove();
+                }
+            }
         }
 
         async addEntry(entry) {
@@ -203,8 +233,13 @@ import { analyzeText } from "../modules/text-analyzer.js";
                 this.editEntry(entry, $entry);
             });
 
-            // append the text to the top of the log
-            this.$list.insertBefore($entryTmp, this.$list.firstChild);
+            // append the new entry before any previous entries
+            const $lastEntry = this.$list.querySelector('.gakuscan-entry');
+            if (!$lastEntry) {
+                this.$list.append($entryTmp);
+                return;
+            }
+            this.$list.insertBefore($entryTmp, $lastEntry);
         }
 
         editEntry(entry, $entry) {

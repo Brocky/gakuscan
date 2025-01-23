@@ -9,6 +9,8 @@
             z-index: -1;
         }
         svg {
+            max-width: 80vw;
+            height: auto;
             fill: color-mix(in srgb, var(--text-color) 20%, transparent);
         }
     </style>
