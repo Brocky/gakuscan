@@ -4,7 +4,7 @@ const entryRepo = {
     connect: function () {
         return new Promise((resolve, reject) => {
             // request the indexedDB connection
-            const dbRequest = indexedDB.open("gakuscan-log", 1);
+            const dbRequest = indexedDB.open("gakuscan-log", 2);
     
             dbRequest.addEventListener('error', () => {
                 // todo error handling
@@ -23,27 +23,75 @@ const entryRepo = {
                 resolve(this);
             });
     
+            // Migrate to newest version
             dbRequest.addEventListener('upgradeneeded', (event) => {
-                // Migrate to newest version
                 const db = event.target.result;
-                db.createObjectStore("entries", { keyPath: "id", autoIncrement: true });
+                const upgradeTransaction = event.target.transaction;
+                let store;
+                
+                if (!db.objectStoreNames.contains("entries")) {
+                  store = db.createObjectStore("entries");
+                } else {
+                  store = upgradeTransaction.objectStore('entries');
+                }
+            
+                if (!store.indexNames.contains("id")) {
+                    store.createIndex("id", "id", { unique: true });
+                }
+                if (!store.indexNames.contains("time")) {
+                    store.createIndex("time", "time", { unique: false });
+                }
             });
         });
     },
 
-    load: function () {
-        return new Promise((resolve, reject) => {
-            // read all entires
+    getNewest: function (batch = 6, entryHandler) {
+        const store  = this.db.transaction(["entries"], "readonly").objectStore('entries');
+        const cursor = store.index('id').openCursor(null, 'prev');
+
+        return new Promise((resolve) => {
+            let loaded  = 0;
             let entries = [];
-            const store = this.db.transaction(["entries"], "readwrite").objectStore('entries');
-            store.openCursor().addEventListener('success', (event) => {
-                let cursor = event.target.result;
-                if (cursor) {
-                    entries.push(cursor.value);
-                    cursor.continue();
-                } else {
-                    resolve(entries);
+
+            cursor.addEventListener('success', (e) => {
+                const result = e.target.result;
+
+                if (result && loaded < batch) {
+                    entries.push(result.value);
+                    loaded++;
+                    if (typeof entryHandler === 'function') {
+                        entryHandler(result.value);
+                    }
+                    result.continue();
+                    return;
                 }
+                resolve(entries);
+            });
+        });
+    },
+
+    getNextBatch: function (oldestId, batch = 6, entryHandler) {
+        const store  = this.db.transaction(["entries"], "readonly").objectStore('entries');
+        const range  = IDBKeyRange.upperBound(oldestId, true);
+        const cursor = store.index('id').openCursor(range, 'prev');
+
+        return new Promise((resolve) => {
+            let loaded  = 0;
+            let entries = [];
+
+            cursor.addEventListener('success', (e) => {
+                const result = e.target.result;
+
+                if (result && loaded < batch) {
+                    entries.push(result.value);
+                    loaded++;
+                    if (typeof entryHandler === 'function') {
+                        entryHandler(result.value);
+                    }
+                    result.continue();
+                    return;
+                }
+                resolve(entries);
             });
         });
     },

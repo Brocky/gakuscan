@@ -78,9 +78,8 @@ a:active {
 }
 #gakuscan-log {
     max-width: 30rem;
-    padding: .5rem;
+    padding-left: .5rem;
     flex-basis: 30%;
-    overflow-y: scroll;
 }
 
 .gs-entry-img img {
@@ -150,5 +149,7 @@ p.gakuscan-entry-text .gs-analized.gs-highlight {
     #gakuscan-log {
         max-width: none;
         flex-basis: 45%;
+        padding-top: .5rem;
+        padding-left: 0;
     }
 }

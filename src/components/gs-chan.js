@@ -3,7 +3,7 @@
     $template.innerHTML = `
     <style>
         :host {
-            position: absolute;
+            position: fixed;
             right: 0;
             bottom: 0;
             z-index: -1;

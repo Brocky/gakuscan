@@ -36,6 +36,11 @@ import { analyzeText } from "../modules/text-analyzer.js";
         .gakuscan-hidden {
             display: none;
         }
+        #gakuscan-entry-log {
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
         #gakuscan-entry-log > section {
             display: flex;
             justify-content: center;
@@ -134,6 +139,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
     class EntryLog extends HTMLElement {
         db       = null; //indexeddb connection
         $list    = null; //entry list container
+        oldestId = null;
 
         constructor() {
             super();
@@ -143,6 +149,38 @@ import { analyzeText } from "../modules/text-analyzer.js";
             // create element from template
             this.appendChild($logTemplate.content.cloneNode(true));
             this.$list = document.getElementById('gakuscan-entry-log');
+
+            let loading   = false;
+            let allLoaded = false;
+
+            // loading functionallity for infinite scrolling
+            const loadNextBatch = async () => {
+                loading = true;
+                const {removeLoader} = this.showLoadingAnim(true);
+                const entries = await this.db.getNextBatch(this.oldestId, 6, (entry) => {
+                    this.renderEntry(entry, 'bottom');
+                });
+                if (entries && entries.length > 0) {
+                    this.oldestId = entries[entries.length - 1].id;
+                } else {
+                    allLoaded = true;
+                }
+                removeLoader();
+                loading = false;
+            };
+
+            // load when list gets scrolled in landscape
+            this.$list.addEventListener('scroll', async () => {
+                if (this.$list.scrollTop + this.$list.clientHeight >= this.$list.scrollHeight - (window.innerHeight * .5) && !loading && !allLoaded) {
+                    await loadNextBatch();
+                }
+            });
+            // scroll handler when in portrait
+            window.addEventListener("scroll", async () => {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - (window.innerHeight * .5) && !loading && !allLoaded) {
+                    await loadNextBatch();
+                }
+              });
         }
 
         async connectedCallback() {
@@ -152,10 +190,13 @@ import { analyzeText } from "../modules/text-analyzer.js";
 
         async renderStoredEntries() {
             const {removeLoader} = this.showLoadingAnim();
-            const entries = await this.db.load();
-            entries.forEach((entry) => {
-                this.renderEntry(entry);
+
+            const entries = await this.db.getNewest(6, (entry) => {
+                this.renderEntry(entry, 'bottom');
             });
+            if (entries) {
+                this.oldestId = entries[entries.length - 1].id;
+            }
             removeLoader();
         }
 
@@ -197,7 +238,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
             document.getElementById(`gakuscan-entry-${id}`).remove();
         }
 
-        renderEntry(entry) {
+        renderEntry(entry, at='top') {
             // get the needed element objects
             const $entryTmp     = $entryTemplate.content.cloneNode(true);
             const $entry        = $entryTmp.querySelector('.gakuscan-entry');
@@ -235,7 +276,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
 
             // append the new entry before any previous entries
             const $lastEntry = this.$list.querySelector('.gakuscan-entry');
-            if (!$lastEntry) {
+            if (!$lastEntry || at == 'bottom') {
                 this.$list.append($entryTmp);
                 return;
             }
