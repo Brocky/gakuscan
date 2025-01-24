@@ -13,11 +13,11 @@
         dialog > section {
             display: flex;
             flex-direction: column;
-            padding: 2rem;
+            padding: var(--large-gab);
             max-height: 80vh;
         }
         dialog > section > main {
-            margin-bottom: 1rem;
+            margin-bottom: var(--large-gab);
             flex-shrink: 1;
             overflow: auto;
         }

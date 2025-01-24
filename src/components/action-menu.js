@@ -12,7 +12,7 @@
         }
         ::slotted(li) {
             all: unset;
-            margin: .2rem;
+            margin: var(--small-gab);
         }
     </style>
     <menu>

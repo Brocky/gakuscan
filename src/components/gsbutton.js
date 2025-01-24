@@ -15,7 +15,7 @@
             font-size: 1.1rem;
             justify-content: center;
             margin: 0;
-            padding: .25rem;
+            padding: var(--small-gab);
             position: relative;
             text-decoration: none;
             transition: all var(--transition-time);

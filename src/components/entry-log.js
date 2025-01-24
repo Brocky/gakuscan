@@ -37,7 +37,9 @@ import { analyzeText } from "../modules/text-analyzer.js";
             display: none;
         }
         #gakuscan-entry-log {
+            box-sizing: border-box;
             height: 100%;
+            padding: var(--medium-gab);
             overflow-y: scroll;
             overflow-x: hidden;
         }
@@ -54,23 +56,23 @@ import { analyzeText } from "../modules/text-analyzer.js";
             background: color-mix(in srgb, var(--bg-plain) 70%, transparent);
             box-shadow: var(--box-shadow);
             border: var(--border-style);
-            padding: .2rem;
-            margin-bottom: .8rem;
+            padding: var(--small-gab);
+            margin-bottom: var(--large-gab);
         }
         .gakuscan-entry-text {
             flex-grow: 1;
             font-size: x-large;
-            padding: 0 .5rem;
+            padding: 0 var(--medium-gab);
         }
         .gakuscan-entry-time {
             font-size: small;
             color: color-mix(in srgb, var(--text-color) 88%, transparent);
             align-self: flex-end;
-            margin: 0 .4rem;
+            margin: 0 var(--medium-gab);
         }
         .gakuscan-entry-tools {
             align-self: flex-end;
-            margin: 0 .4rem;
+            margin: 0  var(--medium-gab);
         }
         .gakuscan-edit-wrapper {
             flex-grow: 1;
@@ -89,14 +91,14 @@ import { analyzeText } from "../modules/text-analyzer.js";
             border: 1px solid rgba(0, 0, 0, 0.4);
             grid-area: 1 / 1 / 2 / 2;
             font-size: x-large;
-            padding: 0 .5rem;
+            padding: 0 var(--medium-gab);
             white-space: pre-line;
         }
         .gs-entry-img {
             position: relative;
             height: fit-content;
             width: fit-content;
-            margin: .5rem auto;
+            margin: var(--medium-gab) auto;
         }
         .gs-entry-img[data-zoom="in"] > img {
             display: none;
@@ -120,12 +122,15 @@ import { analyzeText } from "../modules/text-analyzer.js";
             flex-direction: column;
         }
         @media (orientation: portrait) {
+            #gakuscan-entry-log {
+                overflow-y: auto;
+            }
             .gakuscan-entry-wrapper {
                 display: flex;
                 flex-direction: row-reverse;
             }
             .gs-entry-img {
-                margin-right: .5rem;
+                margin-right: var(--medium-gab);
             }
             .gs-entry-img > img {
                 max-width: 20rem;

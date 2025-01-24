@@ -7,6 +7,9 @@
     --box-shadow: color-mix(in srgb, #383838 8%, transparent) 0 1.429rem 1.786rem -.357px, color-mix(in srgb, #383838 2%, transparent) 0 .714rem .714rem -.357rem;
     --box-shadow-highlight: color-mix(in srgb, #383838 12%, transparent) 0 1.429rem 1.786rem -.357px, color-mix(in srgb, #383838 4%, transparent) 0 .714rem .714rem -.357rem;
     --transition-time: 100ms;
+    --small-gab: .2rem;
+    --medium-gab: .5rem;
+    --large-gab: .8rem;
 }
 [data-theme="dark"] {
     --bg-plain: #143a45;
@@ -37,15 +40,14 @@ header {
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding: .4rem;
 }
 header gs-logo {
     font-size: 4rem;
     line-height: 4rem;
-    margin: 0 .5rem -1rem -.2rem;
+    margin: 0 var(--medium-gab) -1rem -.2rem;
 }
 h2, h3, h4 {
-    margin-block-end: .2rem;
+    margin-block-end: var(--small-gab);
 }
 a {
     color: color-mix(in srgb, var(--text-color) 20%, #007ACC);
@@ -66,7 +68,7 @@ a:active {
     height: 100%;
     width: 100%;
     margin: auto;
-    padding: 1rem;
+    padding: var(--large-gab);
     display: flex;
     align-items: center;
 }
@@ -78,7 +80,6 @@ a:active {
 }
 #gakuscan-log {
     max-width: 30rem;
-    padding-left: .5rem;
     flex-basis: 30%;
 }
 
@@ -149,7 +150,6 @@ p.gakuscan-entry-text .gs-analized.gs-highlight {
     #gakuscan-log {
         max-width: none;
         flex-basis: 45%;
-        padding-top: .5rem;
-        padding-left: 0;
+        padding-top: var(--medium-gab);
     }
 }
