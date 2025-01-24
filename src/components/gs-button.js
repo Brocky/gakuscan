@@ -15,7 +15,7 @@
             font-size: 1.1rem;
             justify-content: center;
             margin: 0;
-            padding: var(--small-gab);
+            padding: var(--medium-gab) var(--large-gab);
             position: relative;
             text-decoration: none;
             transition: all var(--transition-time);
@@ -27,6 +27,9 @@
             min-width: 2.3rem;
             min-height: 2.3rem;
             height: 100%;
+        }
+        button.gs-btn-min {
+            padding: var(--small-gab);
         }
 
         button:hover,
@@ -87,8 +90,10 @@
             let $icon = this.querySelector('gs-icon');
 
             if (!$icon) {
-                if (this.innerHTML) {
+                if (this.innerText) {
                     this.append("\u00A0");
+                } else {
+                    this.shadowRoot.querySelector('button').classList.add('gs-btn-min');
                 }
                 $icon = document.createElement('gs-icon');
                 $icon.classList.add('gs-btn-icon');

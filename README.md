@@ -1,6 +1,6 @@
 [![Discord](https://img.shields.io/discord/1327359399811092552?logo=discord&logoColor=%23fff&label=Discord&labelColor=%235865F2)](https://discord.com/invite/mDumA87rph)
 # GakuScan(学スキャン)
-[![GakuScan Logo](assets/logo-banner.png)](https://gakuscan.app)
+[![GakuScan - Your companion for immersive Japanese learning](assets/logo-banner.png)](https://gakuscan.app)
 
 Immersion is one of the most effective ways to learn a language. GakuScan empowers you to dive into authentic Japanese content without getting overwhelmed. By providing instant support for text recognition and grammar, it helps you focus on enjoying the material while steadily building your skills.
 

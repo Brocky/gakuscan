@@ -1,4 +1,4 @@
-# Why You Need a Google Cloud Vision API Key for GakuScan
+# Why You Need a Google Cloud Vision API Key for GakuScan(学スキャン)
 
 ## Overview
 GakuScan leverages cutting-edge Optical Character Recognition (OCR) technology to analyze and extract text from various media, such as manga and video games. To provide the best possible user experience, the app currently relies on the **Google Cloud Vision API**, which has consistently demonstrated superior accuracy and performance during testing. Here's why obtaining a Google Cloud Vision API key is essential:
@@ -32,4 +32,4 @@ While Google Cloud Vision currently provides the best results, the app's roadmap
 ## Conclusion
 By using the Google Cloud Vision API, GakuScan ensures the best OCR experience across diverse media. With a generous free tier and minimal costs beyond that, it's an accessible solution for most users. As the app improves, additional OCR options will become available, giving you more flexibility and control.
 
-Thank you for using GakuScan!
+Thank you for using GakuScan! 🚀

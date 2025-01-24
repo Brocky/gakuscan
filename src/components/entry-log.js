@@ -104,6 +104,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
             position: relative;
             height: fit-content;
             width: fit-content;
+            max-width: 90%;
             margin: var(--medium-gab) auto;
         }
         .gs-entry-img[data-zoom="in"] > img {
@@ -136,10 +137,8 @@ import { analyzeText } from "../modules/text-analyzer.js";
                 flex-direction: row-reverse;
             }
             .gs-entry-img {
+                max-width: 30%;
                 margin-right: var(--medium-gab);
-            }
-            .gs-entry-img > img {
-                max-width: 20rem;
             }
         }
     </style>

@@ -14,13 +14,13 @@
         
         <script src="./node_modules/@sglkc/kuromoji/build/kuromoji.js"></script>
 
-        <script type="module" src="./src/components/icon.js"></script>
-        <script type="module" src="./src/components/gsbutton.js"></script>
+        <script type="module" src="./src/components/gs-icon.js"></script>
+        <script type="module" src="./src/components/gs-button.js"></script>
         <script type="module" src="./src/components/action-menu.js"></script>
         <script type="module" src="./src/components/capture-ctrl.js"></script>
         <script type="module" src="./src/components/entry-log.js"></script>
-        <script type="module" src="./src/components/settings.js"></script>
-        <script type="module" src="./src/components/dialog.js"></script>
+        <script type="module" src="./src/components/gs-settings.js"></script>
+        <script type="module" src="./src/components/gs-dialog.js"></script>
         <script type="module" src="./src/components/gs-chan.js"></script>
         <script type="module" src="./src/components/gs-logo.js"></script>
         <script type="module" src="./src/main.js"></script>
@@ -30,10 +30,11 @@
         <header>
             <gs-logo></gs-logo>
             <gs-menu>
-                <li><gs-btn button id="gs-settings-btn" icon="settings">Settings</gs-btn></li>
-                <li><gs-btn id="gs-about-btn" icon="about">About</gs-btn></li>
-                <li><gs-btn id="gs-imprint-btn">Imprint</gs-btn></li>
-                <li><gs-btn id="gs-privacy-btn">Privacy Policy</gs-btn></li>
+                <li><gs-btn class="gs-dialog-btn" icon="settings" data-href="gs-settings">Settings</gs-btn></li>
+                <li><gs-btn class="gs-dialog-btn" icon="about" data-href="gs-about">About</gs-btn></li>
+                <li><gs-btn class="gs-dialog-btn" data-href="gs-help">Help</gs-btn></li>
+                <li><gs-btn class="gs-dialog-btn" data-href="gs-imprint">Imprint</gs-btn></li>
+                <li><gs-btn class="gs-dialog-btn" data-href="gs-privacy">Privacy Policy</gs-btn></li>
             </gs-menu>
         </header>
         <main>
@@ -66,15 +67,28 @@
             </section>
             <gs-chan></gs-chan>
         </main>
-        <gs-settings></gs-settings>
+        <gs-settings id="gs-settings"></gs-settings>
+        <gs-dialog id="gs-help">
+            <h2>How to Use GakuScan(学スキャン)</h2>
+            <ol>
+              <li><strong>Capture media</strong>: If the capture icon is missing, make sure your API key is set up. Once available, click it and choose a tab, window, or screen to share.</li>
+              <li><strong>Select text area</strong>: Click and drag to highlight the desired text for analysis.</li>
+              <li><strong>Analyze text</strong>: Extracted text appears with grammar highlights to aid comprehension.</li>
+              <li><strong>Use the text</strong>: Edit, copy, or translate via DeepL for further learning.</li>
+            </ol>
+            <p>For detailed instructions, visit the <a href="https://github.com/Brocky/gakuscan/blob/main/docs/usage.md">full guide</a>.</p>
+            <p>Need help or have feedback? Join our community on <a href="https://discord.com/invite/mDumA87rph">Discord 💬</a>!</p>
+            <br>
+            <p>Thank you for using GakuScan! 🚀</p>
+        </gs-dialog>
         <gs-dialog id="gs-about">
             <h2>About GakuScan(学スキャン)</h2>
             <p><strong>GakuScan</strong> is your companion for <em>immersive Japanese learning</em>, making it easier to understand text from <strong>games, manga, and more</strong>. Using OCR technology and grammar highlighting, it helps you break down complex sentences while staying engaged with your favorite content.</p>
             <h3>Get involved</h3>
-            <p>Have <strong>feedback, questions, or ideas</strong> to improve GakuScan?<br>Join our <a href="https://discord.com/invite/mDumA87rph" target="_blank">official Discord server</a> to connect with the community, get support, and stay updated on the latest features and developments.</p>
+            <p>Have <strong>feedback, questions, or ideas</strong> to improve GakuScan?<br>Join our <a href="https://discord.com/invite/mDumA87rph" target="_blank">official Discord server 💬</a> to connect with the community, get support, and stay updated on the latest features and developments.</p>
             <p>The source code for GakuScan is open source and available on <a href="https://github.com/Brocky/gakuscan">GitHub</a> under the GPL-3.0 license.</p>
             <br>
-            <p>Thank you for using GakuScan!</p>
+            <p>Thank you for using GakuScan! 🚀</p>
         </gs-dialog>
         <gs-dialog id="gs-imprint">
             <h2>Imprint</h2>

@@ -61,21 +61,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // prepare dialog opener
-    document.getElementById('gs-settings-btn').addEventListener('click', () => {
-        document.querySelector('gs-settings').open();
+    [...document.querySelectorAll('.gs-dialog-btn')].forEach(($) => {
+        $.addEventListener('click', () => {
+            const elemId = $.dataset.href;
+            document.getElementById(elemId).open();
+        });
     });
+    
     document.querySelector('a[href="#settings"]').addEventListener('click', (e) => {
         e.preventDefault();
         document.querySelector('gs-settings').open();
-    });
-    document.getElementById('gs-about-btn').addEventListener('click', () => {
-        document.getElementById('gs-about').open();
-    });
-    document.getElementById('gs-imprint-btn').addEventListener('click', () => {
-        document.getElementById('gs-imprint').open();
-    });
-    document.getElementById('gs-privacy-btn').addEventListener('click', () => {
-        document.getElementById('gs-privacy').open();
     });
 
     // initialize kuromoji tokenizer

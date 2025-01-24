@@ -3,12 +3,14 @@
     $dialogTemplate.innerHTML = `
     <style>
         dialog {
+            box-sizing: border-box;
             background: var(--bg-gradient);
             color: var(--text-color);
             box-shadow: var(--box-shadow);
             border: var(--border-style);
-            max-width: 45rem;
-            padding: 0;
+            width: 45rem;
+            max-width: 95vw;
+            padding: var(--medium-gab);
         }
         dialog > section {
             display: flex;
@@ -37,7 +39,7 @@
     </dialog>
     `;
 
-    class Dialog extends HTMLElement {
+    class GSDialog extends HTMLElement {
         constructor() {
             super();
             this.attachShadow({ mode: 'open'});
@@ -62,5 +64,5 @@
         }
     }
 
-    customElements.define('gs-dialog', Dialog);
+    customElements.define('gs-dialog', GSDialog);
 })();

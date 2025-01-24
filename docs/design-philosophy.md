@@ -1,4 +1,4 @@
-# GakuScan Design Philosophy  
+# GakuScan(学スキャン) Design Philosophy  
 
 GakuScan was created with the goal of providing a streamlined, efficient, and immersive tool to aid in learning Japanese. This document outlines the core design principles and decisions that shaped the development of the application.  
   
@@ -37,4 +37,4 @@ GakuScan embodies the philosophy of doing more with less while exploring the pos
 
 If you share this philosophy, have ideas to improve the app, or simply want to connect with the community, we invite you to join our [official Discord server](https://discord.com/invite/mDumA87rph). There, you can discuss GakuScan’s development, offer feedback, and collaborate with like-minded individuals.  
 
-Let’s work together to make GakuScan the ultimate tool for immersive Japanese learning!  
+Thank you for using GakuScan! 🚀
