@@ -47,6 +47,7 @@ jobs:
 
           # Switch current release with previous
           ssh $TARGET_USER@$TARGET_SERVER "
+            rm -rf ~/deploy.bak;
             mv $FINAL_PATH ~/deploy.bak || true;
             mv $TEMP_PATH $FINAL_PATH;
           "
