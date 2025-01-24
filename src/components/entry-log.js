@@ -20,6 +20,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
         </div>
         <gs-menu class="gakuscan-entry-tools">
             <li><gs-btn icon="zoom-out" title="Toggle zoom" class="gakuscan-entry-zoom gs-hidden"></gs-btn></li>
+            <li><gs-btn icon="translate" title="Translate at DeepL" class="gakuscan-entry-translate"></gs-btn></li>
             <li><gs-btn icon="copy" title="Copy to clipboard" class="gakuscan-entry-copy"></gs-btn></li>
             <li><gs-btn icon="edit" title="Edit scanned text" class="gakuscan-entry-edit"></gs-btn></li>
             <li><gs-btn icon="trash" title="Delete entry" class="gakuscan-entry-delete"></gs-btn></li>
@@ -74,6 +75,11 @@ import { analyzeText } from "../modules/text-analyzer.js";
             align-self: flex-end;
             margin: 0  var(--medium-gab);
         }
+
+        /*#gakuscan-entry-log:not([data-translate]) li:has(.gakuscan-entry-translate) {
+            display: none;
+        }*/
+
         .gakuscan-edit-wrapper {
             flex-grow: 1;
             display: grid;
@@ -221,6 +227,14 @@ import { analyzeText } from "../modules/text-analyzer.js";
             }
         }
 
+        enableTranslation() {
+            this.$list.dataset.translate = true;
+        }
+
+        disableTranslation() {
+            delete this.$list.dataset.translate;
+        }
+
         async addEntry(entry) {
             // do nothing if entry is no proper object
             if (entry === null || typeof entry !== 'object' || Array.isArray(entry) || !Object.hasOwn(entry, 'fullText')) {
@@ -266,6 +280,21 @@ import { analyzeText } from "../modules/text-analyzer.js";
                     $imgWrapper.dataset.zoom = 'in';
                     $zoomBtn.setAttribute('icon', 'zoom-out');
                 }
+            });
+            $entry.querySelector('.gakuscan-entry-translate').addEventListener('click', () => {
+                const text = $entry.querySelector('.gakuscan-entry-text').innerText;
+                this.dispatchEvent(new CustomEvent(
+                    'gakuscan-translation-request',
+                    {
+                        bubbles: true,
+                        cancelable: true,
+                        detail: {
+                            entryId: entry.id,
+                            text,
+                        }
+                    }
+                ));
+                window.open(`https://www.deepl.com/en/translator#ja/en-gb/${text}`);
             });
             $entry.querySelector('.gakuscan-entry-copy').addEventListener('click', () => {
                 const text = $entry.querySelector('.gakuscan-entry-text').innerText;

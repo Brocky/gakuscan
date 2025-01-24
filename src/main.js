@@ -1,4 +1,5 @@
 import { getScanner } from './modules/gvision-scanner.js';
+import { getTranslator } from './modules/deepl-translator.js';
 import { getSettingsStore } from './modules/settings-store.js';
 import { analyzeText, setTokenizer } from './modules/text-analyzer.js';
 
@@ -6,6 +7,7 @@ const userPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matche
 const settings        = getSettingsStore();
 
 let OCRScanner = null;
+let translator = null;
 
 // Initiales Laden des Themes
 document.documentElement.setAttribute('data-theme', settings.get('theme') || (userPrefersDark ? 'dark' : 'light'));
@@ -23,7 +25,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         OCRScanner = getScanner(settings.get('gcloud-vision-key'));
         document.getElementById('gs-apikey-hint').classList.add('gs-hidden');
         $capture.classList.remove('gs-hidden');
-    }; 
+    };
+    const enableTranslation = () => {
+        translator = getTranslator(settings.get('deepl-key'));
+        $log.enableTranslation();
+    }
 
     // show capture control if api key is already set
     if (settings.get('gcloud-vision-key')) {
@@ -40,6 +46,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         // ...or show capture control
         showCaptureCtrl();
+    });
+    
+    if (settings.get('deepl-key')) {
+        enableTranslation();
+    }
+    settings.watch('deepl-key', ({newValue}) => {
+        if (!newValue) {
+            translator = null;
+            $log.disableTranslation();
+            return;
+        }
+        enableTranslation();
     });
 
     // prepare dialog opener
@@ -78,6 +96,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         analyzeText(entry);
         removeLoader();
         $log.addEntry(entry);
+    });
+
+    $log.addEventListener('gakuscan-translation-request', async ({detail}) => {
+        if (!translator) {
+            return;
+        }
+
+        const translation = await translator.translate(detail.text);
     });
 
     // load and display stored entries
