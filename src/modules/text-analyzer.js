@@ -20,9 +20,10 @@ const detailTranslation = {
     係助詞: 'binding particle',
     格助詞: 'case-marking particle',
     終助詞: 'sentence ending',
-    接続助詞: 'conjunction particle',
 
+    接続助詞: 'conjunction particle',
     連用形: 'continuative form',
+
     助動詞: 'auxiliary verb',
     連語: 'compound word',
     記号: 'sign',
@@ -58,6 +59,27 @@ function replaceSigns(str) {
     });
 }
 
+function checkConjugation(token, nextToken) {
+    if (
+        ['連用形','連用テ接続'].includes(token.conjugated_form)
+        && nextToken
+        && nextToken.word_type == 'KNOWN' 
+    ) {
+        return true;
+    }
+    if (token.conjugated_form == '未然形') {
+        //Verneinung, Passiv, Kausativ
+        if (nextToken && [
+            "ない", "ぬ", "ん", "せる", "させる", "れる",
+            "られる", "う", "よう", "な", "ざる", "ず"
+        ].includes(nextToken.basic_form)) {
+            return true;
+        }
+        // irrealis stands on it's own (stylistic)
+    }
+    return false;
+}
+
 function analyzeText(entry) {
     if(!tokenizer) {
         return;
@@ -65,9 +87,52 @@ function analyzeText(entry) {
 
     entry.analizedText = [];
     const tokens = tokenizer.tokenize(replaceSigns(entry.fullText));
+    console.log(tokens);
 
-    tokens.forEach((token) => {
-        let analized = {
+    let conjugation = null;
+    tokens.forEach((token, index) => {
+        let analized = null;
+
+        if (conjugation) {
+            // we are continuing a conjugation
+            analized = conjugation;
+            conjugation = null;
+            analized.text += token.surface_form;
+
+            // we are dealing with the て-form
+            if (token.surface_form == 'て') {
+                analized.details.push('て-form');
+                conjugation = analized;
+                return;
+            }
+            switch(token.basic_form) {
+                case 'ます':
+                    analized.details.push('polite');
+                    break;
+                case 'ない':
+                case 'ぬ':
+                case 'ん':
+                case 'ざる':
+                case 'ず':
+                    analized.details.push('negative');
+                    break;
+                default:
+                    analized.details.push('+ ' + token.basic_form);
+            }
+
+            // we are still continuing the conjugation
+            if (checkConjugation(token, tokens[index+1])) {
+                conjugation = analized;
+                return;
+            }
+
+            // the conjugation has ended
+            entry.analizedText.push(analized);
+            return
+        }
+
+        // prepare ablank text obj
+        analized = {
             text: token.surface_form,
             details: []
         }
@@ -89,10 +154,21 @@ function analyzeText(entry) {
                     analized.details.push(detail);
                 }
             });
+            // we are starting a conjugation
+            if (checkConjugation(token, tokens[index + 1])) {
+                conjugation = analized;
+                return;
+            }
         }
 
+        // add analyzed text to entry  
         entry.analizedText.push(analized);
     });
+
+    // if we have an unfished conjugation, add it to the analyzed text
+    if(conjugation) {
+        entry.analizedText.push(conjugation);
+    }
 
     // connect OCR annotations with tokens from kuromoji
     if(Object.hasOwn(entry, 'annotation')) {
