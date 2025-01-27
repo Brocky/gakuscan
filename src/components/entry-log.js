@@ -167,7 +167,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
             const loadNextBatch = async () => {
                 loading = true;
                 const {removeLoader} = this.showLoadingAnim(true);
-                const entries = await this.db.getNextBatch(this.oldestId, 6, (entry) => {
+                const entries = await this.db.getNextBatch(this.oldestId || 0, 6, (entry) => {
                     this.renderEntry(entry, 'bottom');
                 });
                 if (entries && entries.length > 0) {
@@ -204,7 +204,7 @@ import { analyzeText } from "../modules/text-analyzer.js";
             const entries = await this.db.getNewest(6, (entry) => {
                 this.renderEntry(entry, 'bottom');
             });
-            if (entries) {
+            if (entries && entries.length > 0) {
                 this.oldestId = entries[entries.length - 1].id;
             }
             removeLoader();
