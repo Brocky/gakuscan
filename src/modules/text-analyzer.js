@@ -61,7 +61,7 @@ function replaceSigns(str) {
 
 function checkConjugation(token, nextToken) {
     if (
-        ['連用形','連用テ接続'].includes(token.conjugated_form)
+        ['連用形','連用テ接続','連用タ接続'].includes(token.conjugated_form)
         && nextToken
         && nextToken.word_type == 'KNOWN' 
     ) {
@@ -99,13 +99,16 @@ function analyzeText(entry) {
             conjugation = null;
             analized.text += token.surface_form;
 
-            // we are dealing with the て-form
-            if (token.surface_form == 'て') {
-                analized.details.push('て-form');
-                conjugation = analized;
-                return;
-            }
             switch(token.basic_form) {
+                case 'て':
+                    if(tokens[index+1] && tokens[index+1].pos == '動詞' && tokens[index+1].pos_detail_1 == '非自立') {
+                        // next token is a helper verb
+                        analized.details.push('て-form');
+                        conjugation = analized;
+                        return;
+                    }
+                    analized.details.push('imperative');
+                    break;
                 case 'ます':
                     analized.details.push('polite');
                     break;
