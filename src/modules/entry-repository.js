@@ -4,7 +4,7 @@ const entryRepo = {
     connect: function () {
         return new Promise((resolve, reject) => {
             // request the indexedDB connection
-            const dbRequest = indexedDB.open("gakuscan-log", 2);
+            const dbRequest = indexedDB.open("gakuscan-data", 1);
     
             dbRequest.addEventListener('error', () => {
                 // todo error handling
@@ -30,7 +30,7 @@ const entryRepo = {
                 let store;
                 
                 if (!db.objectStoreNames.contains("entries")) {
-                  store = db.createObjectStore("entries");
+                  store = db.createObjectStore("entries", { keyPath: "id", autoIncrement: true });
                 } else {
                   store = upgradeTransaction.objectStore('entries');
                 }
@@ -99,6 +99,7 @@ const entryRepo = {
     add: function(entry) {
         return new Promise((resolve, reject) => {
             // save the new entry to the db
+            console.log(entry);
             const store = this.db.transaction(["entries"], "readwrite").objectStore('entries');
             store.add(entry).addEventListener('success', (e) => {
                 entry.id = e.target.result;

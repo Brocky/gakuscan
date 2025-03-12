@@ -87,7 +87,7 @@ function analyzeText(entry) {
 
     entry.analizedText = [];
     const tokens = tokenizer.tokenize(replaceSigns(entry.fullText));
-    console.log(tokens);
+    //console.log(tokens);
 
     let conjugation = null;
     tokens.forEach((token, index) => {
